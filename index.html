@@ -242,6 +242,17 @@
       .chip.low { animation: chipNudge 0.9s ease-in-out infinite alternate; }
       @keyframes chipNudge { from { transform: scale(1); } to { transform: scale(1.07); } }
       .win-unlock { text-align: center; font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 18px; color: #2FA84F; margin: 2px 0 4px; }
+      .intro-new {
+        text-align: center; font-family: "Baloo 2", sans-serif; font-weight: 800;
+        font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent);
+        margin: 2px 0 0;
+      }
+      #introVisual { display: flex; justify-content: center; margin: 12px 0 6px; }
+      .intro-bubble { width: 96px; height: 96px; position: relative; flex: none; }
+      .intro-bubble .sym { font-size: 44px; }
+      .intro-bubble .badge { font-size: 34px; }
+      .intro-bubble .veil { font-size: 38px; }
+      #introText { text-align: center; }
       #arrowHint {
         position: absolute; z-index: 7; pointer-events: none;
         color: var(--accent); font-size: 26px; line-height: 1;
@@ -404,6 +415,18 @@
         <div class="legend" id="legend"></div>
         <div class="btn-row">
           <button id="helpClose" class="ctl-btn primary">Back to the game</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="introOverlay" class="overlay hidden">
+      <div class="panel">
+        <p class="intro-new">New bubble!</p>
+        <h2 id="introTitle"></h2>
+        <div id="introVisual"></div>
+        <p id="introText"></p>
+        <div class="btn-row">
+          <button id="introOk" class="ctl-btn primary">Let's play!</button>
         </div>
       </div>
     </div>
@@ -729,7 +752,7 @@
       /* ================= save ================= */
       var SAVE_KEY = 'rainbow-pop-v1';
       var SAVE_BACKUP_KEY = 'rainbow-pop-v1-backup';
-      var save = { sound: true, stars: {}, bestTaps: {}, progress: {}, tutorial: {} };
+      var save = { sound: true, stars: {}, bestTaps: {}, progress: {}, tutorial: {}, intro: {} };
       function readStored(key) {
         try {
           var raw = localStorage.getItem(key);
@@ -746,6 +769,7 @@
           save.bestTaps = p.bestTaps || {};
           save.progress = p.progress || {};
           save.tutorial = p.tutorial || {};
+          save.intro = p.intro || {};
         }
       }
       function mergeStored(p) {
@@ -759,6 +783,8 @@
         for (k in sBest) { if (o.call(sBest, k) && (save.bestTaps[k] === undefined || sBest[k] < save.bestTaps[k])) save.bestTaps[k] = sBest[k]; }
         var sTut = p.tutorial || {};
         for (k in sTut) { if (o.call(sTut, k) && sTut[k]) save.tutorial[k] = true; }
+        var sIntro = p.intro || {};
+        for (k in sIntro) { if (o.call(sIntro, k) && sIntro[k]) save.intro[k] = true; }
         var sProg = p.progress || {};
         for (k in sProg) {
           if (o.call(sProg, k) && save.progress[k] === undefined && String(k) !== String(cur.level)) save.progress[k] = sProg[k];
@@ -1048,6 +1074,89 @@
           arrowEl.classList.remove('hidden');
         }
       }
+      /* ============ in-game introductions for new mechanics ============
+         The first time a level introduces a new kind of bubble, the game
+         itself pauses on that level and explains it, with a big picture of
+         the bubble, before the player makes a move. Flags live in
+         save.intro (separate from the older save.tutorial one-liners), so
+         every player sees the full explanation once — including players on
+         an existing save who already passed these levels or only ever saw
+         the old one-line prompt. To introduce a future mechanic, add an
+         entry here and one branch in maybeTutorial. */
+      var INTROS = {
+        rainbow: {
+          title: 'Meet the Rainbow Bubble!',
+          text: 'A rainbow bubble is every color at once! It joins any bubbles it touches — even different colors — into one big group. Tap the group and they all pop together!',
+          reminder: 'Rainbow bubbles match every color!',
+          visual: function () {
+            return '<div class="intro-bubble"><div class="face rainbow"><span class="sym">✦</span></div></div>';
+          },
+          cells: function () {
+            var out = [];
+            cur.board.forEach(function (col, c) { col.forEach(function (b, r) { if (b.color === RAINBOW) out.push([c, r]); }); });
+            return out;
+          },
+          ringArrow: false
+        },
+        boom: {
+          title: 'Meet the Boom Bubble!',
+          text: 'See the spark badge? When a group with a boom bubble pops, every bubble touching the group pops too — splash! And if the splash reaches another boom bubble, that one goes off as well.',
+          reminder: 'Boom bubbles pop everything touching the group!',
+          visual: function () {
+            return '<div class="intro-bubble"><div class="face" style="background:radial-gradient(circle at 32% 26%, rgba(255,255,255,0.55), rgba(255,255,255,0) 52%), radial-gradient(circle at 50% 118%, rgba(0,0,0,0.20), rgba(0,0,0,0) 55%), ' + PALETTE[1].hex + '"><span class="sym">' + PALETTE[1].sym + '</span><span class="badge badge-boom">✸</span></div></div>';
+          },
+          cells: function () {
+            var plain = plainOf(cur.board);
+            var gs = findGroups(plain).filter(function (g) {
+              return g.length >= 2 && g.some(function (p) { return plain[p[0]][p[1]].b; });
+            });
+            gs.sort(function (a, z) { return z.length - a.length; });
+            if (gs.length) return gs[0];
+            var out = [];
+            cur.board.forEach(function (col, c) { col.forEach(function (b, r) { if (b.boom) out.push([c, r]); }); });
+            return out;
+          },
+          ringArrow: true
+        },
+        ice: {
+          title: 'Meet the Ice Bubble!',
+          text: 'An ice bubble is frozen solid! It cannot pop and cannot join a group. Pop bubbles right next to it to crack the ice. Two cracks melt it — then it pops like any other bubble.',
+          reminder: 'Ice melts after two pops next to it!',
+          visual: function () {
+            return '<div class="intro-bubble"><div class="face" style="background:radial-gradient(circle at 32% 26%, rgba(255,255,255,0.55), rgba(255,255,255,0) 52%), radial-gradient(circle at 50% 118%, rgba(0,0,0,0.20), rgba(0,0,0,0) 55%), ' + PALETTE[4].hex + '"><span class="sym">' + PALETTE[4].sym + '</span><span class="veil">❄</span></div></div>';
+          },
+          cells: function () {
+            var out = [];
+            cur.board.forEach(function (col, c) { col.forEach(function (b, r) { if ((b.ice || 0) > 0) out.push([c, r]); }); });
+            return out;
+          },
+          ringArrow: false
+        }
+      };
+      var pendingIntro = null;
+      function showIntro(key) {
+        var intro = INTROS[key];
+        if (!intro) return;
+        pendingIntro = key;
+        $('introTitle').textContent = intro.title;
+        $('introText').textContent = intro.text;
+        $('introVisual').innerHTML = intro.visual();
+        $('introOverlay').classList.remove('hidden');
+      }
+      function dismissIntro() {
+        if (!pendingIntro) return;
+        var intro = INTROS[pendingIntro];
+        var key = pendingIntro;
+        pendingIntro = null;
+        $('introOverlay').classList.add('hidden');
+        /* Point the new bubbles out on the board, with the short reminder,
+           so the player can spot them right away. */
+        var cellsArr = intro.cells();
+        if (cellsArr.length) ringCells(cellsArr, intro.ringArrow);
+        showPrompt(intro.reminder, key);
+      }
+      $('introOk').addEventListener('click', dismissIntro);
+
       function maybeTutorial(n, resumed) {
         if (n === 1 && !save.tutorial.l1a && !resumed) {
           save.tutorial.l1a = true; persist();
@@ -1055,31 +1164,23 @@
           gs.sort(function (a, z) { return z.length - a.length; });
           if (gs.length) ringCells(gs[0], true);
           showPrompt('Tap a group of matching bubbles!', 'l1a');
-        } else if (n === 9 && !save.tutorial.rainbow) {
+        } else if (n === 9 && !save.intro.rainbow) {
           var hasRainbow = plainOf(cur.board).some(function (col) { return col.some(function (cell) { return cell.c === RAINBOW; }); });
           if (hasRainbow) {
-            save.tutorial.rainbow = true; persist();
-            var cellsArr = [];
-            cur.board.forEach(function (col, c) { col.forEach(function (b, r) { if (b.color === RAINBOW) cellsArr.push([c, r]); }); });
-            ringCells(cellsArr, false);
-            showPrompt('Rainbow bubbles match every color!', 'rainbow');
+            save.intro.rainbow = true; persist();
+            showIntro('rainbow');
           }
-        } else if (n === 31 && !save.tutorial.boom) {
-          var plain = plainOf(cur.board);
-          var gs = findGroups(plain).filter(function (g) {
-            return g.length >= 2 && g.some(function (p) { return plain[p[0]][p[1]].b; });
-          });
-          gs.sort(function (a, z) { return z.length - a.length; });
-          save.tutorial.boom = true; persist();
-          if (gs.length) ringCells(gs[0], true);
-          showPrompt('Boom bubbles pop everything touching the group!', 'boom');
-        } else if (n === 41 && !save.tutorial.ice) {
-          var iceCells = [];
-          cur.board.forEach(function (col, c) { col.forEach(function (b, r) { if ((b.ice || 0) > 0) iceCells.push([c, r]); }); });
-          if (iceCells.length) {
-            save.tutorial.ice = true; persist();
-            ringCells(iceCells, false);
-            showPrompt('Ice melts after two pops next to it!', 'ice');
+        } else if (n === 31 && !save.intro.boom) {
+          var hasBoom = plainOf(cur.board).some(function (col) { return col.some(function (cell) { return cell.b; }); });
+          if (hasBoom) {
+            save.intro.boom = true; persist();
+            showIntro('boom');
+          }
+        } else if (n === 41 && !save.intro.ice) {
+          var hasIce = plainOf(cur.board).some(function (col) { return col.some(function (cell) { return (cell.i || 0) > 0; }); });
+          if (hasIce) {
+            save.intro.ice = true; persist();
+            showIntro('ice');
           }
         }
       }
@@ -1117,6 +1218,7 @@
       function onBubbleTap(id) {
         ensureAudio();
         if (animating || finished) return;
+        if (pendingIntro) return;
         if (promptMode === 'rainbow' || promptMode === 'boom' || promptMode === 'ice') hidePrompt();
         var pos = locate(id);
         if (!pos) return;
@@ -1280,6 +1382,8 @@
         finished = false;
         animating = false;
         hidePrompt();
+        pendingIntro = null;
+        $('introOverlay').classList.add('hidden');
         $('outOverlay').classList.add('hidden');
         $('winOverlay').classList.add('hidden');
         boardEl.innerHTML = '';
@@ -1310,6 +1414,8 @@
       function goMap() {
         if (cur.level) persistProgress();
         hidePrompt();
+        pendingIntro = null;
+        $('introOverlay').classList.add('hidden');
         $('winOverlay').classList.add('hidden');
         $('outOverlay').classList.add('hidden');
         buildMap();
@@ -1424,14 +1530,17 @@
           return { level: cur.level, taps: cur.taps, score: cur.score, par: cur.par, budget: cur.budget,
                    tapsLeft: Math.max(0, cur.budget - cur.taps), totalCells: cur.totalCells,
                    cells: countCells(), finished: finished,
-                   sound: save.sound, tutorial: JSON.parse(JSON.stringify(save.tutorial)), prompt: promptMode };
+                   sound: save.sound, tutorial: JSON.parse(JSON.stringify(save.tutorial)),
+                   intro: JSON.parse(JSON.stringify(save.intro)), pendingIntro: pendingIntro,
+                   introVisible: !$('introOverlay').classList.contains('hidden'),
+                   introTitle: $('introTitle').textContent, introText: $('introText').textContent, prompt: promptMode };
         },
         saveSnapshot: function () { return JSON.parse(JSON.stringify(save)); },
         tapBubbleAt: function (c, r) {
           if (cur.board[c] && cur.board[c][r]) onBubbleTap(cur.board[c][r].id);
         },
         undo: function () { $('undoBtn').click(); },
-        clearSave: function () { try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem(SAVE_BACKUP_KEY); } catch (e) {} save = { sound: true, stars: {}, bestTaps: {}, progress: {}, tutorial: {} }; },
+        clearSave: function () { try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem(SAVE_BACKUP_KEY); } catch (e) {} save = { sound: true, stars: {}, bestTaps: {}, progress: {}, tutorial: {}, intro: {} }; },
         verifyAll: function () {
           var out = [];
           for (var n = 1; n <= TOTAL_LEVELS; n++) {
