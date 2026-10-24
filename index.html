@@ -1,0 +1,1337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>Rainbow Rings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#FFF6E9;
+    --bg2:#FFFDF8;
+    --card:#FFFFFF;
+    --ink:#2B2440;
+    --ink-soft:#6B6480;
+    --line:#F0E4D3;
+    --chip:#FFF0D6;
+    --accent:#FF7A59;
+    --accent-ink:#FFFFFF;
+    --good:#2FBF71;
+    --shadow:0 10px 30px rgba(90,50,10,.14);
+    --shadow-sm:0 4px 14px rgba(90,50,10,.12);
+    --radius:22px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#191B2E;
+      --bg2:#1E2038;
+      --card:#262842;
+      --ink:#F6F2FF;
+      --ink-soft:#B9B3D6;
+      --line:#3A3C63;
+      --chip:#33355E;
+      --shadow:0 10px 30px rgba(0,0,0,.45);
+      --shadow-sm:0 4px 14px rgba(0,0,0,.4);
+    }
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:"Nunito",system-ui,sans-serif;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(255,207,63,.20) 0 60px, transparent 61px),
+      radial-gradient(circle at 88% 14%, rgba(38,198,218,.16) 0 46px, transparent 47px),
+      radial-gradient(circle at 82% 88%, rgba(241,91,181,.13) 0 70px, transparent 71px),
+      radial-gradient(circle at 8% 90%, rgba(62,207,110,.14) 0 52px, transparent 53px),
+      var(--bg);
+    color:var(--ink);
+    overflow-x:hidden;
+  }
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+  button:focus-visible{outline:3px solid #4A7DFF;outline-offset:2px;}
+  h1,h2,h3{font-family:"Fredoka","Nunito",sans-serif;margin:0;}
+
+  /* ---------- App shell ---------- */
+  #app{max-width:560px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;padding:0 16px;}
+  .view{display:none;flex-direction:column;flex:1;min-height:0;}
+  .view.active{display:flex;}
+
+  /* ---------- Map view ---------- */
+  .map-head{padding:26px 4px 6px;text-align:center;}
+  .logo-rings{display:flex;justify-content:center;margin-bottom:10px;}
+  .logo-rings svg{width:92px;height:92px;filter:drop-shadow(0 6px 14px rgba(90,50,10,.18));}
+  .map-head h1{font-size:2.35rem;font-weight:700;letter-spacing:.01em;line-height:1.05;}
+  .map-head h1 .w-red{color:#FF5252}.map-head h1 .w-orange{color:#FF9F2E}.map-head h1 .w-yellow{color:#E8A90C}
+  .map-head h1 .w-green{color:#2FBF71}.map-head h1 .w-aqua{color:#1CA8C0}.map-head h1 .w-blue{color:#4A7DFF}
+  .map-head h1 .w-purple{color:#9B5DE5}.map-head h1 .w-pink{color:#F15BB5}
+  .tagline{color:var(--ink-soft);font-weight:700;font-size:1rem;margin-top:6px;}
+  .total-stars{
+    display:inline-flex;align-items:center;gap:7px;margin-top:14px;background:var(--card);
+    border:2px solid var(--line);border-radius:999px;padding:7px 16px;font-weight:800;box-shadow:var(--shadow-sm);font-size:.98rem;
+  }
+  .total-stars svg{width:20px;height:20px;}
+  .howto{
+    margin:18px 0 4px;background:var(--card);border:2px solid var(--line);border-radius:var(--radius);
+    padding:14px 18px;display:flex;gap:14px;align-items:center;box-shadow:var(--shadow-sm);
+  }
+  .howto .h-ic{flex:0 0 auto;width:52px;height:52px;border-radius:16px;background:var(--chip);display:grid;place-items:center;}
+  .howto p{margin:0;font-weight:700;font-size:.96rem;line-height:1.45;}
+  .howto p span{color:var(--ink-soft);font-weight:700;}
+  .level-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:18px 0 8px;}
+  @media (min-width:480px){.level-grid{grid-template-columns:1fr 1fr 1fr;}}
+  .grid-head{
+    grid-column:1 / -1;font-family:"Fredoka",sans-serif;font-size:1.12rem;font-weight:600;
+    padding:10px 2px 0;display:flex;align-items:center;gap:10px;
+  }
+  .grid-head::after{content:"";flex:1;height:2px;background:var(--line);border-radius:2px;}
+  .grid-head .gh-sub{font-family:"Nunito",sans-serif;font-size:.8rem;font-weight:800;color:var(--ink-soft);}
+  .level-card{
+    background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:14px 12px 12px;
+    text-align:left;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:8px;position:relative;
+    transition:transform .15s ease, box-shadow .15s ease;width:100%;
+  }
+  .level-card:active{transform:scale(.97);}
+  .level-card .lc-top{display:flex;align-items:center;justify-content:space-between;}
+  .level-num{font-family:"Fredoka",sans-serif;font-size:1.5rem;font-weight:700;line-height:1;}
+  .lc-mini{width:44px;height:44px;flex:0 0 auto;}
+  .lc-meta{font-size:.8rem;font-weight:800;color:var(--ink-soft);line-height:1.35;}
+  .lc-stars{display:flex;gap:2px;min-height:20px;align-items:center;}
+  .lc-stars svg{width:20px;height:20px;}
+  .lc-badge{font-size:.72rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:3px 9px;display:inline-block;width:fit-content;}
+  .badge-new{background:var(--chip);color:var(--ink-soft);}
+  .badge-playing{background:#FFE3D3;color:#B44A12;}
+  .badge-done{background:#D9F7E6;color:#127542;}
+  .badge-skipped{background:#E7E4F7;color:#5A48B8;}
+  @media (prefers-color-scheme: dark){
+    .badge-playing{background:#5A3319;color:#FFC9A3;}
+    .badge-done{background:#14402A;color:#8CF0B6;}
+    .badge-skipped{background:#3B3470;color:#C9C2FF;}
+  }
+  .lc-skip{
+    font-size:.78rem;font-weight:800;color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px;
+    padding:4px 2px;align-self:flex-start;
+  }
+  .map-actions{display:flex;gap:10px;justify-content:center;padding:10px 0 4px;flex-wrap:wrap;}
+  .sound-btn{
+    display:inline-flex;align-items:center;gap:8px;background:var(--card);border:2px solid var(--line);
+    border-radius:999px;padding:9px 18px;font-weight:800;font-size:.95rem;box-shadow:var(--shadow-sm);
+  }
+  .sound-btn svg{width:20px;height:20px;}
+  footer.site-footer{
+    text-align:center;color:var(--ink-soft);font-size:.82rem;font-weight:700;line-height:1.6;
+    padding:22px 10px calc(20px + env(safe-area-inset-bottom));
+  }
+
+  /* ---------- Play view ---------- */
+  .play-wrap{display:flex;flex-direction:column;flex:1;min-height:100dvh;padding-top:calc(10px + env(safe-area-inset-top));}
+  .hud{display:flex;align-items:center;gap:8px;}
+  .hud-btn{
+    width:46px;height:46px;flex:0 0 auto;border-radius:15px;background:var(--card);border:2px solid var(--line);
+    display:grid;place-items:center;box-shadow:var(--shadow-sm);
+  }
+  .hud-btn:active{transform:scale(.93);}
+  .hud-btn svg{width:22px;height:22px;}
+  .hud-mid{flex:1;text-align:center;min-width:0;}
+  .hud-level{font-family:"Fredoka",sans-serif;font-size:1.3rem;font-weight:600;line-height:1.1;white-space:nowrap;}
+  .hud-sub{font-size:.8rem;font-weight:800;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .stat-row{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap;}
+  .stat{
+    background:var(--card);border:2px solid var(--line);border-radius:999px;padding:6px 14px;
+    font-weight:800;font-size:.9rem;display:inline-flex;gap:6px;align-items:center;box-shadow:var(--shadow-sm);
+  }
+  .stat .lbl{color:var(--ink-soft);font-size:.76rem;text-transform:uppercase;letter-spacing:.05em;}
+  .link-tip{
+    margin-top:12px;background:var(--chip);border:2px solid var(--line);border-radius:18px;
+    padding:10px 12px 10px 14px;display:flex;gap:12px;align-items:center;box-shadow:var(--shadow-sm);
+  }
+  .link-tip .lt-ic{flex:0 0 auto;width:42px;height:42px;border-radius:13px;background:var(--card);display:grid;place-items:center;}
+  .link-tip p{margin:0;font-weight:800;font-size:.9rem;line-height:1.4;flex:1;}
+  .link-tip button{
+    flex:0 0 auto;background:var(--accent);color:var(--accent-ink);border-radius:999px;
+    padding:8px 14px;font-weight:800;font-size:.85rem;
+  }
+  .board-zone{flex:1;display:grid;place-items:center;padding:10px 0 4px;min-height:0;}
+  .board-holder{position:relative;width:min(92vw,470px);aspect-ratio:1/1;}
+  #board{width:100%;height:100%;display:block;overflow:visible;}
+  .ring-g{cursor:pointer;}
+  .seg{stroke:var(--bg2);stroke-width:2.4;transition:filter .25s ease;}
+  .seg.complete{filter:brightness(1.08) saturate(1.15) drop-shadow(0 0 5px rgba(255,255,255,.85));}
+  .seg-sheen{pointer-events:none;}
+  .partner-flash .seg{filter:brightness(1.32) saturate(1.25) drop-shadow(0 0 8px rgba(255,180,0,.9));}
+  .hint-pulse .seg{animation:hintPulse .55s ease-in-out infinite alternate;}
+  @keyframes hintPulse{from{filter:brightness(1);}to{filter:brightness(1.3) saturate(1.3) drop-shadow(0 0 9px rgba(255,255,255,.95));}}
+  .sparkle-star{pointer-events:none;transform-box:fill-box;transform-origin:center;animation:sparklePop .7s ease-out forwards;}
+  @keyframes sparklePop{0%{transform:scale(0) rotate(0deg);opacity:0;}40%{opacity:1;}100%{transform:scale(1.25) rotate(40deg);opacity:0;}}
+  .controls{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:8px 0 4px;}
+  .ctl{
+    background:var(--card);border:2px solid var(--line);border-radius:18px;padding:10px 4px 8px;
+    display:flex;flex-direction:column;align-items:center;gap:3px;font-weight:800;font-size:.8rem;box-shadow:var(--shadow-sm);
+  }
+  .ctl:active{transform:scale(.94);}
+  .ctl svg{width:24px;height:24px;}
+  .ctl:disabled{opacity:.38;cursor:default;}
+  .ctl:disabled:active{transform:none;}
+  .skip-row{text-align:center;padding:6px 0 calc(12px + env(safe-area-inset-bottom));}
+  .skip-link{font-weight:800;color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px;font-size:.92rem;padding:8px;}
+
+  /* confetti */
+  #confetti{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:5;}
+  .confetti-piece{position:absolute;left:50%;top:50%;width:11px;height:11px;border-radius:3px;animation:burst 1.15s cubic-bezier(.17,.67,.35,1) forwards;}
+  @keyframes burst{
+    0%{transform:translate(-50%,-50%) rotate(0deg) scale(1);opacity:1;}
+    100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--rot)) scale(.7);opacity:0;}
+  }
+
+  /* ---------- Overlays ---------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(30,20,50,.5);display:none;place-items:center;z-index:40;padding:20px;
+    backdrop-filter:blur(3px);
+  }
+  .overlay.show{display:grid;}
+  .sheet{
+    background:var(--card);border-radius:28px;padding:28px 24px 22px;max-width:400px;width:100%;text-align:center;
+    box-shadow:var(--shadow);animation:sheetIn .35s cubic-bezier(.34,1.4,.64,1);
+  }
+  @keyframes sheetIn{from{transform:scale(.85) translateY(16px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
+  .sheet h2{font-size:1.7rem;font-weight:700;}
+  .win-stars{display:flex;justify-content:center;gap:6px;margin:14px 0 6px;}
+  .win-stars svg{width:52px;height:52px;animation:starIn .5s cubic-bezier(.34,1.6,.64,1) backwards;}
+  .win-stars svg:nth-child(2){animation-delay:.14s;}
+  .win-stars svg:nth-child(3){animation-delay:.28s;}
+  @keyframes starIn{from{transform:scale(0) rotate(-40deg);}to{transform:scale(1) rotate(0deg);}}
+  .win-line{font-weight:800;color:var(--ink-soft);font-size:1rem;margin:4px 0 18px;line-height:1.5;}
+  .win-line b{color:var(--ink);}
+  .sheet-btns{display:flex;flex-direction:column;gap:10px;}
+  .btn-big{
+    border-radius:999px;padding:14px 20px;font-family:"Fredoka",sans-serif;font-size:1.08rem;font-weight:600;
+    display:flex;align-items:center;justify-content:center;gap:9px;width:100%;
+  }
+  .btn-big:active{transform:scale(.97);}
+  .btn-primary{background:var(--accent);color:var(--accent-ink);box-shadow:0 6px 18px rgba(255,122,89,.4);}
+  .btn-soft{background:var(--chip);color:var(--ink);}
+  .btn-ghost{color:var(--ink-soft);font-family:"Nunito",sans-serif;font-weight:800;font-size:.95rem;padding:10px;}
+  .tut-anim{display:flex;justify-content:center;margin:6px 0 14px;}
+  .tut-anim svg{width:120px;height:120px;}
+  .tut-ring-anim{transform-box:fill-box;transform-origin:center;animation:tutSpin 1.6s ease-in-out infinite;}
+  @keyframes tutSpin{0%,55%{transform:rotate(0deg);}80%,100%{transform:rotate(45deg);}}
+  .sheet p.tut-text{font-weight:700;font-size:1.02rem;line-height:1.55;margin:0 0 18px;}
+  .finger{animation:fingerTap 1.6s ease-in-out infinite;}
+  @keyframes fingerTap{0%,55%{transform:translateY(0);opacity:.0;}65%{opacity:1;}80%,100%{transform:translateY(-4px);opacity:0;}}
+
+  @media (prefers-reduced-motion: reduce){
+    .seg.complete{filter:brightness(1.08);}
+    .partner-flash .seg{filter:brightness(1.2);}
+    .hint-pulse .seg{animation:none;filter:brightness(1.25);}
+    .sparkle-star{animation:none;opacity:0;}
+    .confetti-piece{animation:none;opacity:0;}
+    .sheet,.win-stars svg{animation:none;}
+    .tut-ring-anim,.finger{animation:none;}
+    .level-card:active,.ctl:active,.hud-btn:active,.btn-big:active{transform:none;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ LEVEL MAP ============ -->
+  <section class="view active" id="view-map">
+    <div class="map-head">
+      <div class="logo-rings" id="logoRings" aria-hidden="true"></div>
+      <h1><span class="w-red">R</span><span class="w-orange">a</span><span class="w-yellow">i</span><span class="w-green">n</span><span class="w-aqua">b</span><span class="w-blue">o</span><span class="w-purple">w</span> <span class="w-pink">R</span><span class="w-red">i</span><span class="w-orange">n</span><span class="w-yellow">g</span><span class="w-green">s</span></h1>
+      <p class="tagline">Tap a ring to spin it. Line up every wedge in one solid color.</p>
+      <div class="total-stars" id="totalStars"></div>
+    </div>
+
+    <div class="howto">
+      <div class="h-ic" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="34" height="34"><circle cx="24" cy="24" r="20" fill="none" stroke="#FF9F2E" stroke-width="5" stroke-dasharray="10 5.6" stroke-linecap="round"/><path d="M24 14 L30 24 L24 34 L18 24 Z" fill="#FF5252"/><circle cx="24" cy="24" r="3.4" fill="#fff"/></svg>
+      </div>
+      <p>Pick any level to play. <span>Every level can be replayed, skipped, and finished in any order. No timers, ever. From level 5, chained rings spin together.</span></p>
+    </div>
+
+    <div class="level-grid" id="levelGrid"></div>
+
+    <div class="map-actions">
+      <button class="sound-btn" id="soundBtnMap" aria-label="Toggle sound"></button>
+    </div>
+
+    <footer class="site-footer">Rainbow Rings<br />Created by Matthew Haber<br />© 2026 Matthew Haber. All rights reserved.</footer>
+  </section>
+
+  <!-- ============ PLAY ============ -->
+  <section class="view" id="view-play">
+    <div class="play-wrap">
+      <div class="hud">
+        <button class="hud-btn" id="backBtn" aria-label="Back to level map">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"/></svg>
+        </button>
+        <div class="hud-mid">
+          <div class="hud-level" id="hudLevel">Level 1</div>
+          <div class="hud-sub" id="hudSub">2 rings · 6 colors</div>
+        </div>
+        <button class="hud-btn" id="soundBtnPlay" aria-label="Toggle sound"></button>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat"><span class="lbl">Spins</span> <span id="statSpins">0</span></div>
+        <div class="stat"><span class="lbl">Par</span> <span id="statPar">0</span></div>
+        <div class="stat" id="statBest" style="display:none"><span class="lbl">Best</span> <span id="statBestVal">0</span></div>
+      </div>
+
+      <div class="link-tip" id="linkTip" style="display:none">
+        <div class="lt-ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#FF7A59" stroke-width="2.4" stroke-linecap="round"><circle cx="8.5" cy="15.5" r="4.6"/><circle cx="15.5" cy="8.5" r="4.6"/></svg>
+        </div>
+        <p id="linkTipText">See the chain badge? Those two rings are chained: spin one and its partner spins too.</p>
+        <button id="linkTipBtn">Got it</button>
+      </div>
+
+      <div class="board-zone">
+        <div class="board-holder">
+          <svg id="board" viewBox="0 0 400 400" role="img" aria-label="Rainbow Rings board. Tap a ring to spin it clockwise."></svg>
+          <div id="confetti"></div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="ctl" id="undoBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 L4 9 L9 4"/><path d="M4 9 H14 a6 6 0 0 1 0 12 h-3"/></svg>
+          Undo
+        </button>
+        <button class="ctl" id="hintBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 h6"/><path d="M10 21 h4"/><path d="M12 3 a6 6 0 0 1 3.5 10.9 c-.7.5-1 1-1 2.1 h-5 c0-1.1-.3-1.6-1-2.1 A6 6 0 0 1 12 3 Z"/></svg>
+          Hint
+        </button>
+        <button class="ctl" id="restartBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12 a8 8 0 1 1 -2.3-5.6"/><path d="M20 3 v4 h-4"/></svg>
+          Restart
+        </button>
+        <button class="ctl" id="skipBtn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5.5 v13 l8-6.5 Z"/><rect x="16" y="5" width="2.6" height="14" rx="1.2"/></svg>
+          Skip
+        </button>
+      </div>
+      <div class="skip-row"><span style="color:var(--ink-soft);font-weight:700;font-size:.85rem;">Stuck? Hint always shows a right move, and Undo goes all the way back.</span></div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ WIN OVERLAY ============ -->
+<div class="overlay" id="winOverlay" role="dialog" aria-modal="true" aria-label="Level complete">
+  <div class="sheet">
+    <h2 id="winTitle">You did it!</h2>
+    <div class="win-stars" id="winStars"></div>
+    <p class="win-line" id="winLine"></p>
+    <div class="sheet-btns">
+      <button class="btn-big btn-primary" id="winNext">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M7 5.5 v13 l8-6.5 Z"/><rect x="16.4" y="5" width="2.4" height="14" rx="1.1"/></svg>
+        Next Level
+      </button>
+      <button class="btn-big btn-soft" id="winAgain">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12 a8 8 0 1 1 -2.3-5.6"/><path d="M20 3 v4 h-4"/></svg>
+        Play Again
+      </button>
+      <button class="btn-big btn-ghost" id="winMap">Level Map</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TUTORIAL OVERLAY ============ -->
+<div class="overlay" id="tutOverlay" role="dialog" aria-modal="true" aria-label="How to play">
+  <div class="sheet">
+    <h2>How to play</h2>
+    <div class="tut-anim" aria-hidden="true">
+      <svg viewBox="0 0 120 120">
+        <g class="tut-ring-anim">
+          <path d="M60 14 A46 46 0 0 1 99.8 37" fill="none" stroke="#FF5252" stroke-width="17"/>
+          <path d="M99.8 37 A46 46 0 0 1 99.8 83" fill="none" stroke="#FF9F2E" stroke-width="17"/>
+          <path d="M99.8 83 A46 46 0 0 1 60 106" fill="none" stroke="#FFCF3F" stroke-width="17"/>
+          <path d="M60 106 A46 46 0 0 1 20.2 83" fill="none" stroke="#3ECF6E" stroke-width="17"/>
+          <path d="M20.2 83 A46 46 0 0 1 20.2 37" fill="none" stroke="#26C6DA" stroke-width="17"/>
+          <path d="M20.2 37 A46 46 0 0 1 60 14" fill="none" stroke="#4A7DFF" stroke-width="17"/>
+        </g>
+        <circle cx="60" cy="60" r="24" fill="var(--card)"/>
+        <path class="finger" d="M86 78 c2-1 4 1 4 3 l-1 9 c0 5-4 8-8 8 h-7 c-4 0-7-2-9-5 l-5-8 c-1-2 0-4 2-4 1 0 2 1 3 2 l1 2 V72 c0-2 2-3 3-3 s3 1 3 3 v-2 c0-2 2-3 3-3 s3 1 3 3 v-1 c0-2 2-3 3-3 s3 1 3 3 l2 9 Z" fill="#FFD9A0" stroke="#D89B4E" stroke-width="1.6"/>
+      </svg>
+    </div>
+    <p class="tut-text">Tap a ring to spin it one step.<br />Line up every wedge so each slice is one solid color.<br />From level 5, chained rings spin together.</p>
+    <div class="sheet-btns">
+      <button class="btn-big btn-primary" id="tutGo">Start Playing</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ================= Audio session (ambient mix) ================= */
+function setAmbientSession(){
+  try{
+    if (navigator.audioSession) navigator.audioSession.type = "ambient";
+  }catch(e){ /* unsupported: skip harmlessly */ }
+}
+setAmbientSession();
+document.addEventListener("visibilitychange", function(){ if(!document.hidden) setAmbientSession(); });
+
+/* ================= Colors, symbols, notes ================= */
+/* Spectrum order. freq = one note of a C major octave, red lowest to pink highest. */
+var COLORS = [
+  { name:"Red",    hex:"#FF5252", freq:261.63, sym:"star"   },
+  { name:"Orange", hex:"#FF9F2E", freq:293.66, sym:"dots"   },
+  { name:"Yellow", hex:"#FFCF3F", freq:329.63, sym:"sun"    },
+  { name:"Green",  hex:"#3ECF6E", freq:349.23, sym:"flower" },
+  { name:"Aqua",   hex:"#26C6DA", freq:392.00, sym:"waves"  },
+  { name:"Blue",   hex:"#4A7DFF", freq:440.00, sym:"moon"   },
+  { name:"Purple", hex:"#9B5DE5", freq:493.88, sym:"diamond"},
+  { name:"Pink",   hex:"#F15BB5", freq:523.25, sym:"heart"  }
+];
+
+/* ================= Level model =================
+   A level is a set of concentric rings. Ring r (0 = innermost) is cut into
+   segs[r] segments; the circle is divided into `rays` solid-color wedges in
+   the solved state, and segs[r] is always a multiple of rays, so each
+   segment sits inside exactly one ray and shows that ray's color.
+   colorAt(r, p): the color index shown by spatial segment p of ring r.
+   A link joins two adjacent rings: spinning either one also spins its
+   partner by one of the partner's own segments, in the link direction
+   (+1 same direction, -1 counter). One tap counts as one spin.
+   Uniform levels have segs[r] === rays for every ring (the original game).
+   Sunburst levels (36-40) mix segment counts, e.g. inner 4, outer 12. */
+function LK(a, b, dir){ return { a:a, b:b, dir:(dir == null ? 1 : dir) }; }
+function DF(segs, rays, links, band, target){
+  return { segs:segs, rays:rays, links:links, band:band, target:target,
+           rings:segs.length, sunburst:segs.some(function(s){ return s !== segs[0]; }) };
+}
+var LEVEL_DEFS = [
+  /* L1-4: on-ramp, 2 rings, 6 colors, no links */
+  DF([6,6],       6, [],                        [2,3],  2),
+  DF([6,6],       6, [],                        [3,4],  3),
+  DF([6,6],       6, [],                        [3,5],  3),
+  DF([6,6],       6, [],                        [4,5],  3),
+  /* L5: the teaching link. Three rings, not two: on a 2-ring board a
+     same-direction link moves both rings identically, so their difference
+     can never change and every scramble would already be solved. One free
+     ring beside the chained pair makes the chain teachable and the level
+     a real (gentle) puzzle. */
+  DF([6,6,6],     6, [LK(0,1,1)],               [3,5],  3),
+  /* L6-15: 3 rings, 6 colors, links grow 1 to 2. A single link caps the
+     true shortest solution at 3 (the pair acts as one ring), so the ramp
+     in this band is about reading chains; the second link at L13 is where
+     shortest solutions jump. */
+  DF([6,6,6],     6, [LK(0,1,1)],               [5,7],  3),
+  DF([6,6,6],     6, [LK(1,2,1)],               [5,8],  3),
+  DF([6,6,6],     6, [LK(0,1,1)],               [6,8],  3),
+  DF([6,6,6],     6, [LK(1,2,1)],               [6,9],  3),
+  DF([6,6,6],     6, [LK(0,1,1)],               [7,9],  3),
+  DF([6,6,6],     6, [LK(1,2,1)],               [7,10], 3),
+  DF([6,6,6],     6, [LK(0,1,1)],               [8,10], 3),
+  DF([6,6,6],     6, [LK(0,1,1), LK(1,2,1)],    [8,10], 7),
+  DF([6,6,6],     6, [LK(0,1,1), LK(1,2,1)],    [9,10], 8),
+  DF([6,6,6],     6, [LK(0,1,1), LK(1,2,1)],    [9,10], 9),
+  /* L16-25: 3 rings, 8 colors, 1-2 links (single link caps shortest at 4) */
+  DF([8,8,8],     8, [LK(0,1,1)],               [8,10], 4),
+  DF([8,8,8],     8, [LK(1,2,1)],               [8,11], 4),
+  DF([8,8,8],     8, [LK(0,1,1)],               [9,11], 4),
+  DF([8,8,8],     8, [LK(1,2,1)],               [9,12], 4),
+  DF([8,8,8],     8, [LK(0,1,1), LK(1,2,1)],    [10,12],9),
+  DF([8,8,8],     8, [LK(0,1,1)],               [10,13],4),
+  DF([8,8,8],     8, [LK(1,2,1)],               [10,13],4),
+  DF([8,8,8],     8, [LK(0,1,1), LK(1,2,1)],    [11,14],11),
+  DF([8,8,8],     8, [LK(1,2,1)],               [11,14],4),
+  DF([8,8,8],     8, [LK(0,1,1), LK(1,2,1)],    [12,14],11),
+  /* L26-35: 4 rings, 8 colors, 2 overlapping links (a chain of three plus
+     one free ring; disjoint pairs would cap shortest solutions at 4),
+     counter-links from L31, never more than one per level */
+  DF([8,8,8,8],   8, [LK(0,1,1), LK(1,2,1)],    [12,16],12),
+  DF([8,8,8,8],   8, [LK(1,2,1), LK(2,3,1)],    [13,18],12),
+  DF([8,8,8,8],   8, [LK(0,1,1), LK(1,2,1)],    [14,18],13),
+  DF([8,8,8,8],   8, [LK(1,2,1), LK(2,3,1)],    [14,20],13),
+  DF([8,8,8,8],   8, [LK(0,1,1), LK(1,2,1)],    [15,20],14),
+  DF([8,8,8,8],   8, [LK(0,1,1), LK(1,2,-1)],   [15,21],15),
+  DF([8,8,8,8],   8, [LK(1,2,1), LK(2,3,-1)],   [16,22],15),
+  DF([8,8,8,8],   8, [LK(0,1,-1), LK(1,2,1)],   [16,22],16),
+  DF([8,8,8,8],   8, [LK(0,1,1), LK(1,2,-1)],   [17,23],16),
+  DF([8,8,8,8],   8, [LK(1,2,-1), LK(2,3,1)],   [18,24],17),
+  /* L36-40: sunburst finale, mixed segment counts, links on two of five */
+  DF([6,6,12],    6, [],                        [12,16],9),
+  DF([4,8,8],     4, [],                        [12,16],6),
+  DF([6,12,12],   6, [LK(1,2,1)],               [14,18],9),
+  DF([4,8,8,12],  4, [],                        [16,20],12),
+  DF([4,8,12,12], 4, [LK(0,1,1)],               [18,22],17)
+];
+
+/* Deterministic PRNG so every device gets the same 40 levels. */
+function makeRng(seed){
+  var s = seed >>> 0;
+  return function(){
+    s = (s * 1664525 + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
+}
+
+function blockOf(level, r){ return level.segs[r] / level.rays; }
+function colorAt(level, offsets, r, p){
+  var S = level.segs[r], B = blockOf(level, r);
+  var q = ((p - offsets[r]) % S + S) % S;
+  return Math.floor(q / B);
+}
+function rayColor(level, offsets, r, k){
+  return colorAt(level, offsets, r, k * blockOf(level, r));
+}
+function rayComplete(level, offsets, k){
+  /* Every segment inside the ray, on every ring, must show the ray color:
+     sampling one segment per ring is not enough on sunburst boards, where
+     a ring whose offset is not a multiple of its block size shows two
+     colors inside a single ray. */
+  var c = rayColor(level, offsets, 0, k);
+  for (var r = 0; r < level.rings; r++){
+    var B = blockOf(level, r);
+    for (var w = k * B; w < (k + 1) * B; w++){
+      if (colorAt(level, offsets, r, w) !== c) return false;
+    }
+  }
+  return true;
+}
+function isSolved(level, offsets){
+  for (var k = 0; k < level.rays; k++) if (!rayComplete(level, offsets, k)) return false;
+  return true;
+}
+/* Direct linked partners of ring r: [{idx, dir}]. No cascading: a partner
+   moved by a link does not trigger its own links. */
+function partnersOf(level, r){
+  var out = [];
+  level.links.forEach(function(l){
+    if (l.a === r) out.push({ idx:l.b, dir:l.dir });
+    else if (l.b === r) out.push({ idx:l.a, dir:l.dir });
+  });
+  return out;
+}
+function applyMove(level, offsets, r){
+  var next = offsets.slice();
+  var S = level.segs;
+  next[r] = (next[r] + 1) % S[r];
+  partnersOf(level, r).forEach(function(p){
+    next[p.idx] = ((next[p.idx] + p.dir) % S[p.idx] + S[p.idx]) % S[p.idx];
+  });
+  return next;
+}
+function applyInverse(level, offsets, r){
+  var next = offsets.slice();
+  var S = level.segs;
+  next[r] = ((next[r] - 1) % S[r] + S[r]) % S[r];
+  partnersOf(level, r).forEach(function(p){
+    next[p.idx] = ((next[p.idx] - p.dir) % S[p.idx] + S[p.idx]) % S[p.idx];
+  });
+  return next;
+}
+/* BFS over ring offsets with legal taps only. Returns the true shortest
+   solution length and a first move that lies on a shortest path, so hints
+   are always genuinely correct. maxDist optionally caps the search during
+   level generation (returns Infinity when the solution is longer). */
+function bfsSolve(level, start, maxDist){
+  if (isSolved(level, start)) return { dist:0, first:-1 };
+  var cap = (maxDist == null) ? Infinity : maxDist;
+  var seen = {};
+  seen[start.join(",")] = true;
+  var queue = [{ off:start, first:-1, dist:0 }];
+  var head = 0;
+  while (head < queue.length){
+    var node = queue[head++];
+    if (node.dist >= cap) continue;
+    for (var r = 0; r < level.rings; r++){
+      var nxt = applyMove(level, node.off, r);
+      var key = nxt.join(",");
+      if (seen[key]) continue;
+      seen[key] = true;
+      var fm = node.first === -1 ? r : node.first;
+      if (isSolved(level, nxt)) return { dist:node.dist + 1, first:fm };
+      queue.push({ off:nxt, first:fm, dist:node.dist + 1 });
+    }
+  }
+  return { dist:Infinity, first:-1 };
+}
+
+/* Build a level: scramble the solved state with legal taps (linked effects
+   included), keeping the scramble whose BFS-shortest solution lands closest
+   to the target. Solvable by construction; par derives from the true
+   shortest solution plus small slack. */
+function buildLevel(idx){
+  var def = LEVEL_DEFS[idx];
+  var level = { id:idx + 1, segs:def.segs, rays:def.rays, links:def.links,
+                rings:def.rings, sunburst:def.sunburst };
+  var rng = makeRng(424243 + idx * 104729);
+  var zero = def.segs.map(function(){ return 0; });
+  var best = null, bestScore = -Infinity;
+  for (var attempt = 0; attempt < 400; attempt++){
+    var scrLen = def.band[0] + Math.floor(rng() * (def.band[1] - def.band[0] + 1));
+    var off = zero.slice();
+    for (var i = 0; i < scrLen; i++){
+      off = applyMove(level, off, Math.floor(rng() * def.rings));
+    }
+    if (isSolved(level, off)) continue;
+    var sol = bfsSolve(level, off, def.target + 1);
+    if (!isFinite(sol.dist) || sol.dist === 0) continue;
+    var score = -Math.abs(sol.dist - def.target) * 100 + scrLen;
+    if (score > bestScore){ bestScore = score; best = { offsets:off, minimal:sol.dist, scrLen:scrLen }; }
+    if (sol.dist === def.target) break;
+  }
+  if (!best){ /* fallback: keep scrambling until a non-solved board appears */
+    var off2 = zero.slice(), guard = 0;
+    while (isSolved(level, off2) && guard++ < 5000){
+      off2 = applyMove(level, off2, Math.floor(rng() * def.rings));
+    }
+    var sol2 = bfsSolve(level, off2, null);
+    best = { offsets:off2, minimal:sol2.dist, scrLen:guard };
+  }
+  var slack = Math.max(1, Math.round(best.minimal * 0.3));
+  level.initialOffsets = best.offsets.slice();
+  level.minimal = best.minimal;
+  level.scrambleLen = best.scrLen;
+  level.par = best.minimal + slack;
+  return level;
+}
+var LEVELS = LEVEL_DEFS.map(function(_, i){ return buildLevel(i); });
+
+/* ================= Persistence =================
+   v2 store: level definitions changed (links, sunburst, 40 levels), so old
+   v1 progress is reset cleanly; the sound setting and tutorial-seen flag
+   carry over from v1. */
+var STORE_KEY = "rainbowRings.v2";
+var store = { soundOn:true, seenTutorial:false, seenLinkTip:false, levels:{} };
+try{
+  var raw2 = localStorage.getItem(STORE_KEY);
+  if (raw2){
+    var parsed2 = JSON.parse(raw2);
+    if (parsed2 && typeof parsed2 === "object") store = Object.assign(store, parsed2);
+  } else {
+    var raw1 = localStorage.getItem("rainbowRings.v1");
+    if (raw1){
+      var parsed1 = JSON.parse(raw1);
+      if (parsed1 && typeof parsed1 === "object"){
+        if (typeof parsed1.soundOn === "boolean") store.soundOn = parsed1.soundOn;
+        if (typeof parsed1.seenTutorial === "boolean") store.seenTutorial = parsed1.seenTutorial;
+      }
+    }
+  }
+}catch(e){ /* storage unavailable: play in-memory */ }
+function save(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(store)); }catch(e){}
+}
+function levelRec(id){
+  if (!store.levels[id]) store.levels[id] = { status:"new", stars:0, bestSpins:null, saved:null };
+  return store.levels[id];
+}
+
+/* ================= Audio engine ================= */
+var audioCtx = null, master = null;
+function ensureAudio(){
+  setAmbientSession();
+  if (!store.soundOn) return null;
+  try{
+    if (!audioCtx){
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      audioCtx = new AC();
+      var comp = audioCtx.createDynamicsCompressor();
+      comp.threshold.value = -16; comp.knee.value = 22; comp.ratio.value = 8;
+      comp.attack.value = 0.003; comp.release.value = 0.18;
+      master = audioCtx.createGain();
+      master.gain.value = 0.9;
+      master.connect(comp); comp.connect(audioCtx.destination);
+    }
+    if (audioCtx.state !== "running") audioCtx.resume();
+    return audioCtx;
+  }catch(e){ return null; }
+}
+function tone(freq, when, dur, type, peak, glideTo){
+  if (!audioCtx || !master) return;
+  var t = audioCtx.currentTime + when;
+  var osc = audioCtx.createOscillator();
+  var g = audioCtx.createGain();
+  osc.type = type || "sine";
+  osc.frequency.setValueAtTime(freq, t);
+  if (glideTo) osc.frequency.exponentialRampToValueAtTime(glideTo, t + dur);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(peak || 0.32, t + 0.015);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  osc.connect(g); g.connect(master);
+  osc.start(t); osc.stop(t + dur + 0.05);
+}
+function playPop(ringIdx, numRings){
+  if (!ensureAudio()) return;
+  /* inner rings (index 0) pitch highest */
+  var step = (numRings - 1 - ringIdx);
+  var base = 480 + step * 130;
+  tone(base, 0, 0.1, "triangle", 0.5, base * 1.7);
+  tone(base * 2.4, 0, 0.05, "square", 0.12);
+}
+function playPartnerPop(){
+  if (!ensureAudio()) return;
+  tone(340, 0.03, 0.09, "triangle", 0.3, 480);
+}
+function playNote(colorIdx){
+  if (!ensureAudio()) return;
+  var f = COLORS[colorIdx].freq;
+  tone(f, 0, 0.5, "sine", 0.42);
+  tone(f * 2, 0, 0.32, "triangle", 0.14);
+}
+function playUndo(){
+  if (!ensureAudio()) return;
+  tone(392, 0, 0.1, "triangle", 0.3, 300);
+}
+function playWinScale(numColors){
+  if (!ensureAudio()) return;
+  for (var i = 0; i < numColors; i++){
+    (function(i){
+      var f = COLORS[i].freq;
+      setTimeout(function(){
+        if (!audioCtx) return;
+        tone(f, 0, 0.55, "sine", 0.42);
+        tone(f * 2, 0, 0.3, "triangle", 0.13);
+      }, i * 115);
+    })(i);
+  }
+  setTimeout(function(){ tone(1046.5, 0, 0.7, "sine", 0.3); }, numColors * 115);
+}
+
+/* ================= SVG helpers ================= */
+var SVGNS = "http://www.w3.org/2000/svg";
+function el(tag, attrs){
+  var n = document.createElementNS(SVGNS, tag);
+  for (var k in attrs) n.setAttribute(k, attrs[k]);
+  return n;
+}
+function polar(cx, cy, r, deg){
+  var rad = (deg - 90) * Math.PI / 180;
+  return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
+}
+function sectorPath(cx, cy, rIn, rOut, a0, a1){
+  var gap = 1.1;
+  a0 += gap; a1 -= gap;
+  var p1 = polar(cx, cy, rOut, a0), p2 = polar(cx, cy, rOut, a1);
+  var p3 = polar(cx, cy, rIn, a1), p4 = polar(cx, cy, rIn, a0);
+  var large = (a1 - a0) > 180 ? 1 : 0;
+  return "M" + p1[0].toFixed(2) + " " + p1[1].toFixed(2) +
+         " A" + rOut + " " + rOut + " 0 " + large + " 1 " + p2[0].toFixed(2) + " " + p2[1].toFixed(2) +
+         " L" + p3[0].toFixed(2) + " " + p3[1].toFixed(2) +
+         " A" + rIn + " " + rIn + " 0 " + large + " 0 " + p4[0].toFixed(2) + " " + p4[1].toFixed(2) + " Z";
+}
+/* White symbol markup centred at 0,0, drawn within roughly +/-10 box. */
+function symbolGroup(sym, scale){
+  var g = el("g", { transform:"scale(" + scale + ")", "pointer-events":"none" });
+  var W = "#FFFFFF";
+  function add(n){ g.appendChild(n); return n; }
+  if (sym === "star"){
+    var pts = [];
+    for (var i = 0; i < 10; i++){
+      var ang = -90 + i * 36, rr = (i % 2 === 0) ? 9.5 : 4.2;
+      var rad = ang * Math.PI / 180;
+      pts.push((rr * Math.cos(rad)).toFixed(2) + "," + (rr * Math.sin(rad)).toFixed(2));
+    }
+    add(el("polygon", { points: pts.join(" "), fill: W }));
+  } else if (sym === "dots"){
+    [[-4.6,-4.6],[4.6,-4.6],[0,0],[-4.6,4.6],[4.6,4.6]].forEach(function(p){
+      add(el("circle", { cx:p[0], cy:p[1], r:2.5, fill: W }));
+    });
+  } else if (sym === "sun"){
+    add(el("circle", { cx:0, cy:0, r:4.4, fill: W }));
+    for (var j = 0; j < 8; j++){
+      var a = j * 45 * Math.PI / 180;
+      add(el("line", {
+        x1:(6.4 * Math.cos(a)).toFixed(2), y1:(6.4 * Math.sin(a)).toFixed(2),
+        x2:(9.4 * Math.cos(a)).toFixed(2), y2:(9.4 * Math.sin(a)).toFixed(2),
+        stroke: W, "stroke-width": 2.1, "stroke-linecap": "round"
+      }));
+    }
+  } else if (sym === "flower"){
+    for (var k = 0; k < 5; k++){
+      var fa = (-90 + k * 72) * Math.PI / 180;
+      add(el("circle", { cx:(5.6 * Math.cos(fa)).toFixed(2), cy:(5.6 * Math.sin(fa)).toFixed(2), r:3.6, fill: W, opacity: 0.92 }));
+    }
+    add(el("circle", { cx:0, cy:0, r:2.7, fill: W }));
+  } else if (sym === "waves"){
+    add(el("path", { d:"M-9 -3.4 q3 -4.4 6 0 q3 4.4 6 0 q3 -4.4 6 0", fill:"none", stroke: W, "stroke-width": 2.5, "stroke-linecap": "round" }));
+    add(el("path", { d:"M-9 3.6 q3 -4.4 6 0 q3 4.4 6 0 q3 -4.4 6 0", fill:"none", stroke: W, "stroke-width": 2.5, "stroke-linecap": "round" }));
+  } else if (sym === "moon"){
+    add(el("path", { d:"M6.8 -8.2 A10 10 0 1 0 6.8 8.2 A7.8 7.8 0 1 1 6.8 -8.2 Z", fill: W }));
+  } else if (sym === "diamond"){
+    add(el("polygon", { points:"0,-9.6 6.8,0 0,9.6 -6.8,0", fill: W }));
+  } else if (sym === "heart"){
+    add(el("path", { d:"M0 8.6 C-9.8 2.4 -10.4 -4.4 -6.2 -7.4 C-3.4 -9.4 -0.6 -7.6 0 -5.4 C0.6 -7.6 3.4 -9.4 6.2 -7.4 C10.4 -4.4 9.8 2.4 0 8.6 Z", fill: W }));
+  }
+  return g;
+}
+function starSVG(filled, size){
+  var pts = [];
+  for (var i = 0; i < 10; i++){
+    var ang = -90 + i * 36, rr = (i % 2 === 0) ? 11 : 4.8;
+    var rad = ang * Math.PI / 180;
+    pts.push((12 + rr * Math.cos(rad)).toFixed(2) + "," + (12 + rr * Math.sin(rad)).toFixed(2));
+  }
+  return '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" aria-hidden="true"><polygon points="' + pts.join(" ") + '" fill="' + (filled ? "#FFB800" : "none") + '" stroke="' + (filled ? "#E8A90C" : "#C9C2B8") + '" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+}
+function chainBadgeSVG(counter){
+  var c = counter ? "#9B5DE5" : "#FF7A59";
+  return '<g pointer-events="none"><circle r="13.5" fill="var(--card)" stroke="' + c + '" stroke-width="2.4"/>' +
+    '<g fill="none" stroke="' + c + '" stroke-width="2.3" stroke-linecap="round">' +
+    '<circle cx="-4" cy="4" r="4.8"/><circle cx="4" cy="-4" r="4.8"/></g>' +
+    (counter ? '<path d="M-6.5 -6.5 L6.5 6.5" stroke="' + c + '" stroke-width="2.3" stroke-linecap="round"/>' : '') +
+    '</g>';
+}
+function soundIcon(){
+  if (store.soundOn){
+    return '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 L6.5 9 H3 v6 h3.5 L11 19 Z" fill="currentColor" stroke="none"/><path d="M15 9.5 a4 4 0 0 1 0 5"/><path d="M17.5 7 a7.5 7.5 0 0 1 0 10"/></svg><span>Sound on</span>';
+  }
+  return '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 L6.5 9 H3 v6 h3.5 L11 19 Z" fill="currentColor" stroke="none"/><path d="M16 9.5 l6 6"/><path d="M22 9.5 l-6 6"/></svg><span>Sound off</span>';
+}
+function soundIconSmall(){
+  if (store.soundOn){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 L6.5 9 H3 v6 h3.5 L11 19 Z" fill="currentColor" stroke="none"/><path d="M15 9.5 a4 4 0 0 1 0 5"/><path d="M17.5 7 a7.5 7.5 0 0 1 0 10"/></svg>';
+  }
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 L6.5 9 H3 v6 h3.5 L11 19 Z" fill="currentColor" stroke="none"/><path d="M16 9.5 l6 6"/><path d="M22 9.5 l-6 6"/></svg>';
+}
+
+/* ================= Game state ================= */
+var current = null; /* { level, offsets:[], history:[] } */
+var animating = false;
+var hintRing = -1, hintTimer = null;
+var completedBefore = {};
+var flashRings = [];
+var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function starsFor(spins, par){
+  if (spins <= par) return 3;
+  if (spins <= par + Math.ceil(par * 0.7)) return 2;
+  return 1;
+}
+function levelBlurb(lv){
+  var bits = [];
+  if (lv.sunburst) bits.push("Sunburst");
+  bits.push(lv.rings + " rings");
+  bits.push(lv.rays + " colors");
+  if (lv.links.length){
+    var hasCounter = lv.links.some(function(l){ return l.dir < 0; });
+    bits.push(hasCounter ? "chained + counter-chain" : "chained");
+  }
+  return bits.join(" · ");
+}
+
+/* ================= Views ================= */
+var viewMap = document.getElementById("view-map");
+var viewPlay = document.getElementById("view-play");
+function showView(which){
+  viewMap.classList.toggle("active", which === "map");
+  viewPlay.classList.toggle("active", which === "play");
+  window.scrollTo(0, 0);
+}
+
+/* ---- Logo + mini previews ---- */
+function miniRingsSVG(level, size){
+  var cx = 50, cy = 50, hole = 10, outer = 47;
+  var thick = (outer - hole) / level.rings;
+  var out = '<svg viewBox="0 0 100 100" width="' + size + '" height="' + size + '" aria-hidden="true">';
+  for (var r = 0; r < level.rings; r++){
+    var S = level.segs[r], step = 360 / S;
+    var rIn = hole + r * thick + 0.7, rOut = hole + (r + 1) * thick - 0.7;
+    for (var w = 0; w < S; w++){
+      var ci = colorAt(level, level.initialOffsets, r, w);
+      out += '<path d="' + sectorPath(cx, cy, rIn, rOut, w * step, (w + 1) * step) + '" fill="' + COLORS[ci].hex + '"/>';
+    }
+  }
+  out += '<circle cx="50" cy="50" r="' + (hole - 1.5) + '" fill="var(--card)"/></svg>';
+  return out;
+}
+function renderLogo(){
+  document.getElementById("logoRings").innerHTML = miniRingsSVG(LEVELS[17], 92);
+}
+function statusInfo(rec){
+  if (rec.status === "finished") return { cls:"badge-done", txt:"Finished" };
+  if (rec.status === "playing") return { cls:"badge-playing", txt:"In progress" };
+  if (rec.status === "skipped") return { cls:"badge-skipped", txt:"Skipped" };
+  return { cls:"badge-new", txt:"Not started" };
+}
+var GROUP_HEADS = {
+  1:"First Spins", 5:"Chained Rings", 16:"Full Rainbow", 26:"Four Rings", 36:"Sunburst Finale"
+};
+var GROUP_SUBS = {
+  1:"", 5:"chained rings spin together", 16:"all 8 colors", 26:"two chains at once", 36:"rings with different slices"
+};
+function renderMap(){
+  renderLogo();
+  var total = 0;
+  LEVELS.forEach(function(lv){ total += (levelRec(lv.id).stars || 0); });
+  document.getElementById("totalStars").innerHTML = starSVG(true, 20) + " " + total + " of " + (LEVELS.length * 3) + " stars";
+  var grid = document.getElementById("levelGrid");
+  grid.innerHTML = "";
+  LEVELS.forEach(function(lv){
+    if (GROUP_HEADS[lv.id]){
+      var head = document.createElement("div");
+      head.className = "grid-head";
+      head.innerHTML = GROUP_HEADS[lv.id] + (GROUP_SUBS[lv.id] ? ' <span class="gh-sub">' + GROUP_SUBS[lv.id] + '</span>' : '');
+      grid.appendChild(head);
+    }
+    var rec = levelRec(lv.id);
+    var st = statusInfo(rec);
+    var card = document.createElement("div");
+    card.className = "level-card";
+    var starsHTML = "";
+    for (var s = 0; s < 3; s++) starsHTML += starSVG(s < rec.stars, 20);
+    card.innerHTML =
+      '<div class="lc-top"><span class="level-num">' + lv.id + '</span>' + miniRingsSVG(lv, 44) + '</div>' +
+      '<div class="lc-meta">' + levelBlurb(lv) + '<br />Par ' + lv.par + ' spins</div>' +
+      '<div class="lc-stars">' + starsHTML + '</div>' +
+      '<span class="lc-badge ' + st.cls + '">' + st.txt + '</span>';
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("aria-label", "Play level " + lv.id + ", " + levelBlurb(lv) + ", par " + lv.par);
+    (function(id){
+      card.addEventListener("click", function(){ openLevel(id); });
+      card.addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openLevel(id); } });
+    })(lv.id);
+    if (rec.status !== "finished"){
+      var skip = document.createElement("button");
+      skip.className = "lc-skip";
+      skip.textContent = rec.status === "skipped" ? "Skipped - tap card to play" : "Skip for now";
+      if (rec.status !== "skipped"){
+        (function(id){
+          skip.addEventListener("click", function(e){
+            e.stopPropagation();
+            levelRec(id).status = "skipped";
+            save(); renderMap();
+          });
+        })(lv.id);
+      } else {
+        skip.disabled = true;
+      }
+      card.appendChild(skip);
+    }
+    grid.appendChild(card);
+  });
+  document.getElementById("soundBtnMap").innerHTML = soundIcon();
+}
+
+/* ---- Play screen ---- */
+var board = document.getElementById("board");
+var CENTER = 200, HOLE = 34, OUTER = 188;
+
+function renderBoard(){
+  if (!current) return;
+  var lv = current.level, R = lv.rings;
+  var thick = (OUTER - HOLE) / R;
+  while (board.firstChild) board.removeChild(board.firstChild);
+
+  /* soft drop shadow disc */
+  board.appendChild(el("circle", { cx: CENTER, cy: CENTER + 5, r: OUTER + 4, fill: "rgba(60,30,0,0.10)" }));
+  board.appendChild(el("circle", { cx: CENTER, cy: CENTER, r: OUTER + 4, fill: "var(--card)", stroke: "var(--line)", "stroke-width": 2 }));
+
+  for (var r = 0; r < R; r++){
+    (function(r){
+      var S = lv.segs[r], step = 360 / S, B = blockOf(lv, r);
+      var g = el("g", {
+        "class": "ring-g" + (r === hintRing ? " hint-pulse" : "") + (flashRings.indexOf(r) !== -1 ? " partner-flash" : ""),
+        "data-ring": r,
+        "tabindex": "0", "role": "button",
+        "aria-label": "Spin ring " + (r + 1) + " of " + R + " clockwise"
+      });
+      g.addEventListener("keydown", function(e){
+        if (e.key === "Enter" || e.key === " "){ e.preventDefault(); spinRing(r); }
+      });
+      var rIn = HOLE + r * thick + 1.6, rOut = HOLE + (r + 1) * thick - 1.6;
+      for (var w = 0; w < S; w++){
+        var ci = colorAt(lv, current.offsets, r, w);
+        var done = rayComplete(lv, current.offsets, Math.floor(w / B));
+        var seg = el("path", {
+          d: sectorPath(CENTER, CENTER, rIn, rOut, w * step, (w + 1) * step),
+          fill: COLORS[ci].hex, "class": "seg" + (done ? " complete" : "")
+        });
+        g.appendChild(seg);
+        /* glossy sheen: thin lighter arc near the outer edge */
+        var sheen = el("path", {
+          d: sectorPath(CENTER, CENTER, rOut - (rOut - rIn) * 0.34, rOut - 2.5, w * step + 2, (w + 1) * step - 2),
+          fill: "#FFFFFF", opacity: 0.20, "class": "seg-sheen"
+        });
+        g.appendChild(sheen);
+        /* symbol, kept upright; sized by segment arc so small sunburst
+           slices stay legible */
+        var midR = (rIn + rOut) / 2, midA = (w + 0.5) * step;
+        var pos = polar(CENTER, CENTER, midR, midA);
+        var holder = el("g", { transform: "translate(" + pos[0].toFixed(2) + " " + pos[1].toFixed(2) + ")" });
+        var arcLen = midR * step * Math.PI / 180;
+        var symScale = Math.max(0.45, Math.min(1, Math.min((rOut - rIn) / 34, arcLen / 30)));
+        holder.appendChild(symbolGroup(COLORS[ci].sym, symScale));
+        g.appendChild(holder);
+      }
+      board.appendChild(g);
+    })(r);
+  }
+
+  /* chain badges on the boundary between each linked pair */
+  lv.links.forEach(function(l){
+    var inner = Math.min(l.a, l.b);
+    var rb = HOLE + (inner + 1) * thick;
+    var pos = polar(CENTER, CENTER, rb, 32);
+    var holder = el("g", { transform: "translate(" + pos[0].toFixed(1) + " " + pos[1].toFixed(1) + ")" });
+    holder.innerHTML = chainBadgeSVG(l.dir < 0);
+    board.appendChild(holder);
+  });
+
+  /* centre hub */
+  var hub = el("circle", { cx: CENTER, cy: CENTER, r: HOLE - 3, fill: "var(--card)", stroke: "var(--line)", "stroke-width": 2.5 });
+  board.appendChild(hub);
+  var hubStar = el("g", { transform: "translate(" + CENTER + " " + CENTER + ")" });
+  var gold = el("polygon", { points:"0,-10.5 3.1,-4.2 10,-3.2 5,1.7 6.2,8.6 0,5.2 -6.2,8.6 -5,1.7 -10,-3.2 -3.1,-4.2", fill:"#FFB800", stroke:"#E8A90C", "stroke-width":1 });
+  hubStar.appendChild(gold);
+  board.appendChild(hubStar);
+
+  document.getElementById("statSpins").textContent = current.history.length;
+  document.getElementById("statPar").textContent = lv.par;
+  var rec = levelRec(lv.id);
+  var bestEl = document.getElementById("statBest");
+  if (rec.bestSpins != null){
+    bestEl.style.display = "";
+    document.getElementById("statBestVal").textContent = rec.bestSpins;
+  } else bestEl.style.display = "none";
+  document.getElementById("undoBtn").disabled = current.history.length === 0;
+}
+
+function persistProgress(){
+  if (!current) return;
+  var rec = levelRec(current.level.id);
+  if (rec.status !== "finished") rec.status = "playing";
+  rec.saved = { offsets: current.offsets.slice(), history: current.history.slice() };
+  save();
+}
+
+function openLevel(id){
+  setAmbientSession();
+  var lv = LEVELS[id - 1];
+  var rec = levelRec(id);
+  completedBefore = {};
+  flashRings = [];
+  if (rec.saved && rec.status !== "finished"){
+    current = { level: lv, offsets: rec.saved.offsets.slice(), history: rec.saved.history.slice() };
+  } else {
+    current = { level: lv, offsets: lv.initialOffsets.slice(), history: [] };
+    if (rec.status === "skipped" || rec.status === "new"){ rec.status = "playing"; save(); }
+  }
+  for (var k = 0; k < lv.rays; k++) completedBefore[k] = rayComplete(lv, current.offsets, k);
+  document.getElementById("hudLevel").textContent = "Level " + lv.id;
+  document.getElementById("hudSub").textContent = levelBlurb(lv);
+  document.getElementById("soundBtnPlay").innerHTML = soundIconSmall();
+  /* one-time chain tip the first time a linked level opens */
+  var tip = document.getElementById("linkTip");
+  if (lv.links.length && !store.seenLinkTip){
+    var hasCounter = lv.links.some(function(l){ return l.dir < 0; });
+    document.getElementById("linkTipText").textContent = hasCounter
+      ? "See the chain badges? Chained rings spin together. A purple badge with a slash means that partner spins the other way."
+      : "See the chain badge? Those two rings are chained: spin one and its partner spins too.";
+    tip.style.display = "";
+  } else {
+    tip.style.display = "none";
+  }
+  clearHint();
+  showView("play");
+  renderBoard();
+}
+document.getElementById("linkTipBtn").addEventListener("click", function(){
+  store.seenLinkTip = true;
+  save();
+  document.getElementById("linkTip").style.display = "none";
+  setAmbientSession();
+});
+
+function spinRing(r){
+  if (!current || animating) return;
+  setAmbientSession();
+  clearHint();
+  var lv = current.level;
+  var parts = partnersOf(lv, r);
+  playPop(r, lv.rings);
+  if (parts.length) playPartnerPop();
+  flashRings = parts.map(function(p){ return p.idx; });
+
+  var finish = function(){
+    current.offsets = applyMove(lv, current.offsets, r);
+    current.history.push(r);
+    animating = false;
+    afterMove();
+    if (flashRings.length){
+      setTimeout(function(){ flashRings = []; if (current) renderBoard(); }, 600);
+    }
+  };
+
+  if (reduceMotion){
+    finish();
+    return;
+  }
+  /* animate the tapped ring and every linked partner together */
+  var movers = [{ idx:r, ang:(360 / lv.segs[r]) }];
+  parts.forEach(function(p){
+    movers.push({ idx:p.idx, ang:(360 / lv.segs[p.idx]) * p.dir });
+  });
+  var groups = [];
+  var missing = false;
+  movers.forEach(function(m){
+    var g = board.querySelector('[data-ring="' + m.idx + '"]');
+    if (!g) missing = true;
+    else groups.push({ g:g, ang:m.ang });
+  });
+  if (missing){ finish(); return; }
+  animating = true;
+  var start = null;
+  var dur = 215;
+  function frame(ts){
+    if (!start) start = ts;
+    var t = Math.min(1, (ts - start) / dur);
+    /* easeOutBack-ish overshoot */
+    var c = 1.35;
+    var e = 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2);
+    groups.forEach(function(gr){
+      gr.g.setAttribute("transform", "rotate(" + (gr.ang * e).toFixed(2) + " " + CENTER + " " + CENTER + ")");
+    });
+    if (t < 1) requestAnimationFrame(frame);
+    else {
+      groups.forEach(function(gr){ gr.g.removeAttribute("transform"); });
+      finish();
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+function afterMove(){
+  var lv = current.level;
+  persistProgress();
+  renderBoard();
+  /* newly completed rays: note + sparkle */
+  var newDone = [];
+  for (var k = 0; k < lv.rays; k++){
+    var done = rayComplete(lv, current.offsets, k);
+    if (done && !completedBefore[k]) newDone.push(k);
+    completedBefore[k] = done;
+  }
+  newDone.forEach(function(k, i){
+    var ci = rayColor(lv, current.offsets, 0, k);
+    setTimeout(function(){ playNote(ci); }, i * 90);
+    addSparkle(k);
+  });
+  if (isSolved(lv, current.offsets)){
+    setTimeout(onWin, reduceMotion ? 60 : 380);
+  }
+}
+
+function addSparkle(ray){
+  if (reduceMotion) return;
+  var lv = current.level, step = 360 / lv.rays;
+  var pos = polar(CENTER, CENTER, OUTER - 12, (ray + 0.5) * step);
+  var s = el("path", {
+    d: "M0 -9 L2.2 -2.2 L9 0 L2.2 2.2 L0 9 L-2.2 2.2 L-9 0 L-2.2 -2.2 Z",
+    fill: "#FFFFFF", stroke: "#FFB800", "stroke-width": 0.8,
+    "class": "sparkle-star",
+    transform: "translate(" + pos[0].toFixed(1) + " " + pos[1].toFixed(1) + ")"
+  });
+  board.appendChild(s);
+  setTimeout(function(){ if (s.parentNode) s.parentNode.removeChild(s); }, 760);
+}
+
+function onWin(){
+  if (!current) return;
+  var lv = current.level;
+  var spins = current.history.length;
+  var stars = starsFor(spins, lv.par);
+  var rec = levelRec(lv.id);
+  rec.status = "finished";
+  if (stars > rec.stars) rec.stars = stars;
+  if (rec.bestSpins == null || spins < rec.bestSpins) rec.bestSpins = spins;
+  rec.saved = null;
+  save();
+
+  playWinScale(lv.rays);
+  burstConfetti();
+
+  document.getElementById("winTitle").textContent = spins <= lv.par ? "Brilliant spinning!" : "You did it!";
+  var sh = "";
+  for (var s = 0; s < 3; s++) sh += starSVG(s < stars, 52);
+  document.getElementById("winStars").innerHTML = sh;
+  document.getElementById("winLine").innerHTML =
+    "Level " + lv.id + " finished in <b>" + spins + " spins</b>.<br />Par is <b>" + lv.par + "</b>" +
+    (rec.bestSpins != null ? " · Your best is <b>" + rec.bestSpins + "</b>." : ".");
+  var nextBtn = document.getElementById("winNext");
+  nextBtn.style.display = lv.id < LEVELS.length ? "" : "none";
+  document.getElementById("winOverlay").classList.add("show");
+}
+
+function burstConfetti(){
+  if (reduceMotion) return;
+  var box = document.getElementById("confetti");
+  box.innerHTML = "";
+  var hexes = COLORS.map(function(c){ return c.hex; });
+  for (var i = 0; i < 42; i++){
+    var p = document.createElement("div");
+    p.className = "confetti-piece";
+    var ang = Math.random() * Math.PI * 2;
+    var dist = 90 + Math.random() * 170;
+    p.style.setProperty("--dx", (Math.cos(ang) * dist).toFixed(0) + "px");
+    p.style.setProperty("--dy", (Math.sin(ang) * dist - 30).toFixed(0) + "px");
+    p.style.setProperty("--rot", (Math.random() * 540 - 270).toFixed(0) + "deg");
+    p.style.background = hexes[i % hexes.length];
+    if (i % 3 === 0) p.style.borderRadius = "50%";
+    p.style.animationDelay = (Math.random() * 0.12).toFixed(2) + "s";
+    box.appendChild(p);
+  }
+  setTimeout(function(){ box.innerHTML = ""; }, 1600);
+}
+
+/* ---- Board taps: one handler on the whole board, ring chosen by tap
+   distance from the centre, so even the small gaps between segments and
+   the centre hub count as the nearest ring. Big, forgiving tap targets. */
+board.addEventListener("click", function(e){
+  if (!current || animating) return;
+  var rect = board.getBoundingClientRect();
+  if (!rect.width) return;
+  var x = (e.clientX - rect.left) / rect.width * 400;
+  var y = (e.clientY - rect.top) / rect.height * 400;
+  var dx = x - CENTER, dy = y - CENTER;
+  var dist = Math.sqrt(dx * dx + dy * dy);
+  if (dist > OUTER + 10) return;
+  var R = current.level.rings;
+  var thick = (OUTER - HOLE) / R;
+  var idx = dist < HOLE ? 0 : Math.min(R - 1, Math.floor((dist - HOLE) / thick));
+  spinRing(idx);
+});
+
+/* ---- Controls ---- */
+function clearHint(){
+  hintRing = -1;
+  if (hintTimer){ clearTimeout(hintTimer); hintTimer = null; }
+}
+document.getElementById("undoBtn").addEventListener("click", function(){
+  if (!current || animating || current.history.length === 0) return;
+  setAmbientSession();
+  playUndo();
+  clearHint();
+  flashRings = [];
+  var r = current.history.pop();
+  /* one undo reverses the whole move, linked partners included */
+  current.offsets = applyInverse(current.level, current.offsets, r);
+  for (var k = 0; k < current.level.rays; k++) completedBefore[k] = rayComplete(current.level, current.offsets, k);
+  persistProgress();
+  renderBoard();
+});
+document.getElementById("restartBtn").addEventListener("click", function(){
+  if (!current || animating) return;
+  setAmbientSession();
+  clearHint();
+  flashRings = [];
+  current.offsets = current.level.initialOffsets.slice();
+  current.history = [];
+  for (var k = 0; k < current.level.rays; k++) completedBefore[k] = rayComplete(current.level, current.offsets, k);
+  persistProgress();
+  renderBoard();
+  if (store.soundOn && ensureAudio()) tone(330, 0, 0.12, "triangle", 0.28, 262);
+});
+document.getElementById("hintBtn").addEventListener("click", function(){
+  if (!current || animating) return;
+  setAmbientSession();
+  ensureAudio();
+  /* BFS shortest path from the current position: the suggested ring is a
+     genuinely correct next move, links and sunburst included */
+  var sol = bfsSolve(current.level, current.offsets, null);
+  if (!sol || sol.first === -1) return;
+  hintRing = sol.first;
+  renderBoard();
+  /* the suggested ring plays its pop so ears find it too */
+  playPop(sol.first, current.level.rings);
+  var shownRing = sol.first;
+  hintTimer = setTimeout(function(){ if (hintRing === shownRing) hintRing = -1; if (current) renderBoard(); }, 2400);
+});
+document.getElementById("skipBtn").addEventListener("click", function(){
+  if (!current) return;
+  setAmbientSession();
+  var lv = current.level;
+  var rec = levelRec(lv.id);
+  if (rec.status !== "finished"){
+    rec.status = "skipped";
+    rec.saved = { offsets: current.offsets.slice(), history: current.history.slice() };
+  }
+  save();
+  current = null;
+  if (lv.id < LEVELS.length) openLevel(lv.id + 1);
+  else { renderMap(); showView("map"); }
+});
+document.getElementById("backBtn").addEventListener("click", function(){
+  setAmbientSession();
+  if (current) persistProgress();
+  current = null;
+  renderMap();
+  showView("map");
+});
+
+/* sound toggles */
+function refreshSoundBtns(){
+  document.getElementById("soundBtnMap").innerHTML = soundIcon();
+  document.getElementById("soundBtnPlay").innerHTML = soundIconSmall();
+}
+function toggleSound(){
+  store.soundOn = !store.soundOn;
+  save();
+  refreshSoundBtns();
+  if (store.soundOn){ ensureAudio(); playNote(0); }
+}
+document.getElementById("soundBtnMap").addEventListener("click", function(){ setAmbientSession(); toggleSound(); });
+document.getElementById("soundBtnPlay").addEventListener("click", function(){ setAmbientSession(); toggleSound(); });
+
+/* win overlay buttons */
+document.getElementById("winAgain").addEventListener("click", function(){
+  document.getElementById("winOverlay").classList.remove("show");
+  var id = current ? current.level.id : 1;
+  var lv = LEVELS[id - 1];
+  current = { level: lv, offsets: lv.initialOffsets.slice(), history: [] };
+  completedBefore = {};
+  flashRings = [];
+  for (var k = 0; k < lv.rays; k++) completedBefore[k] = rayComplete(lv, current.offsets, k);
+  clearHint();
+  renderBoard();
+});
+document.getElementById("winNext").addEventListener("click", function(){
+  document.getElementById("winOverlay").classList.remove("show");
+  var id = current ? current.level.id : 1;
+  if (id < LEVELS.length) openLevel(id + 1);
+});
+document.getElementById("winMap").addEventListener("click", function(){
+  document.getElementById("winOverlay").classList.remove("show");
+  current = null;
+  renderMap();
+  showView("map");
+});
+
+/* tutorial */
+document.getElementById("tutGo").addEventListener("click", function(){
+  store.seenTutorial = true;
+  save();
+  document.getElementById("tutOverlay").classList.remove("show");
+  setAmbientSession();
+  ensureAudio();
+});
+
+/* first tap anywhere primes audio + ambient session */
+document.addEventListener("pointerdown", function(){
+  setAmbientSession();
+  if (store.soundOn) ensureAudio();
+}, { passive:true });
+
+/* ================= Boot ================= */
+renderMap();
+showView("map");
+if (!store.seenTutorial){
+  document.getElementById("tutOverlay").classList.add("show");
+}
+})();
+</script>
+</body>
+</html>
