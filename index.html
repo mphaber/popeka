@@ -728,24 +728,51 @@
 
       /* ================= save ================= */
       var SAVE_KEY = 'rainbow-pop-v1';
+      var SAVE_BACKUP_KEY = 'rainbow-pop-v1-backup';
       var save = { sound: true, stars: {}, bestTaps: {}, progress: {}, tutorial: {} };
-      function loadSave() {
+      function readStored(key) {
         try {
-          var raw = localStorage.getItem(SAVE_KEY);
-          if (raw) {
-            var p = JSON.parse(raw);
-            if (p && typeof p === 'object') {
-              save.sound = p.sound !== false;
-              save.stars = p.stars || {};
-              save.bestTaps = p.bestTaps || {};
-              save.progress = p.progress || {};
-              save.tutorial = p.tutorial || {};
-            }
-          }
-        } catch (e) { /* storage unavailable: play session-only */ }
+          var raw = localStorage.getItem(key);
+          if (!raw) return null;
+          var p = JSON.parse(raw);
+          return (p && typeof p === 'object') ? p : null;
+        } catch (e) { return null; }
+      }
+      function loadSave() {
+        var p = readStored(SAVE_KEY) || readStored(SAVE_BACKUP_KEY);
+        if (p) {
+          save.sound = p.sound !== false;
+          save.stars = p.stars || {};
+          save.bestTaps = p.bestTaps || {};
+          save.progress = p.progress || {};
+          save.tutorial = p.tutorial || {};
+        }
+      }
+      function mergeStored(p) {
+        /* Fold another stored copy into memory, keeping the best of both, so a
+           stale tab or reopened webview can never roll finished levels back. */
+        if (!p || typeof p !== 'object') return;
+        var k, o = Object.prototype.hasOwnProperty;
+        var sStars = p.stars || {};
+        for (k in sStars) { if (o.call(sStars, k) && (!save.stars[k] || sStars[k] > save.stars[k])) save.stars[k] = sStars[k]; }
+        var sBest = p.bestTaps || {};
+        for (k in sBest) { if (o.call(sBest, k) && (save.bestTaps[k] === undefined || sBest[k] < save.bestTaps[k])) save.bestTaps[k] = sBest[k]; }
+        var sTut = p.tutorial || {};
+        for (k in sTut) { if (o.call(sTut, k) && sTut[k]) save.tutorial[k] = true; }
+        var sProg = p.progress || {};
+        for (k in sProg) {
+          if (o.call(sProg, k) && save.progress[k] === undefined && String(k) !== String(cur.level)) save.progress[k] = sProg[k];
+        }
       }
       function persist() {
-        try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* ignore */ }
+        /* Re-read and merge first: an older in-memory copy never overwrites
+           newer finished levels, and a backup key guards a corrupt write. */
+        mergeStored(readStored(SAVE_KEY));
+        try {
+          var json = JSON.stringify(save);
+          localStorage.setItem(SAVE_KEY, json);
+          try { localStorage.setItem(SAVE_BACKUP_KEY, json); } catch (e2) { /* ignore */ }
+        } catch (e) { /* storage unavailable: play session-only */ }
       }
 
       /* ================= audio ================= */
@@ -760,6 +787,11 @@
           var Ctx = window.AudioContext || window.webkitAudioContext;
           if (!Ctx) return false;
           AC = new Ctx();
+          /* Creating or resuming a context can reset the session type back to
+             one that interrupts other apps, so re-assert ambient mixing after
+             creation, after resume, and whenever the context reaches running. */
+          setSession();
+          AC.addEventListener('statechange', function () { if (AC.state === 'running') setSession(); });
           var comp = AC.createDynamicsCompressor();
           comp.threshold.value = -18; comp.knee.value = 22; comp.ratio.value = 8;
           comp.attack.value = 0.003; comp.release.value = 0.24;
@@ -768,7 +800,13 @@
           master.connect(comp);
           comp.connect(AC.destination);
         }
-        if (AC.state !== 'running') { try { AC.resume(); } catch (e) { /* ignore */ } }
+        if (AC.state !== 'running') {
+          try {
+            var pr = AC.resume();
+            setSession();
+            if (pr && pr.then) pr.then(function () { setSession(); }, function () { /* ignore */ });
+          } catch (e) { /* ignore */ }
+        }
         return true;
       }
       function tone(freq, opts) {
@@ -1313,7 +1351,6 @@
           card.addEventListener('click', function () {
             var n = parseInt(card.dataset.level, 10);
             if (!isUnlocked(n)) return;
-            ensureAudio();
             startLevel(n, false);
           });
         });
@@ -1394,7 +1431,7 @@
           if (cur.board[c] && cur.board[c][r]) onBubbleTap(cur.board[c][r].id);
         },
         undo: function () { $('undoBtn').click(); },
-        clearSave: function () { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} save = { sound: true, stars: {}, bestTaps: {}, progress: {}, tutorial: {} }; },
+        clearSave: function () { try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem(SAVE_BACKUP_KEY); } catch (e) {} save = { sound: true, stars: {}, bestTaps: {}, progress: {}, tutorial: {} }; },
         verifyAll: function () {
           var out = [];
           for (var n = 1; n <= TOTAL_LEVELS; n++) {
@@ -1410,7 +1447,11 @@
 
       /* ================= init ================= */
       setSession();
-      document.addEventListener('pointerdown', function () { setSession(); ensureAudio(); }, { passive: true });
+      document.addEventListener('pointerdown', function () { setSession(); }, { passive: true });
+      window.addEventListener('pagehide', function () { if (cur.level) persistProgress(); else persist(); });
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden') { if (cur.level) persistProgress(); else persist(); }
+      });
       loadSave();
       updateSoundIcon();
       buildMap();
