@@ -60,7 +60,7 @@
         position: sticky; top: 0; z-index: 40;
         display: flex; align-items: center; gap: 10px;
         padding: 10px 14px;
-        background: rgba(255, 251, 244, 0.94);
+        background: var(--tb, rgba(255, 251, 244, 0.94));
       }
       #topbar::after {
         content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px;
@@ -131,6 +131,14 @@
       .lvl-lock svg { width: 20px; height: 20px; fill: var(--gdeep, var(--ink)); }
 
       /* ---------- game ---------- */
+      #groupLine { text-align: center; margin-bottom: 10px; }
+      #groupLine span {
+        display: inline-block;
+        font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 15px;
+        background: rgba(255, 255, 255, 0.92); color: var(--gdeep, var(--ink));
+        padding: 5px 14px; border-radius: 999px;
+        box-shadow: 0 3px 0 var(--gc, var(--line));
+      }
       #hud { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 10px; }
       .chip {
         background: var(--chip); border: 2px solid var(--line); border-radius: 999px;
@@ -327,6 +335,7 @@
         #topbar { background: rgba(22, 23, 43, 0.94); }
         #starTotal { background: var(--chip); }
         .group-title { background: rgba(20, 20, 40, 0.68); color: var(--gc, var(--ink)); }
+        #groupLine span { background: rgba(20, 20, 40, 0.68); color: var(--gc, var(--ink)); }
         .group-sub { text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55); }
         .lvl-card { background: var(--card); }
         .lvl-num { color: var(--gc, var(--ink)); }
@@ -360,11 +369,12 @@
 
     <main>
       <section id="mapScreen">
-        <div><span id="starTotal"><span class="st">★</span><span id="starTotalTxt">0 of 300 stars</span></span></div>
+        <div><span id="starTotal"><span class="st">★</span><span id="starTotalTxt">0 of 900 stars</span></span></div>
         <div id="mapGroups"></div>
       </section>
 
       <section id="gameScreen" class="hidden">
+        <div id="groupLine"><span id="groupLineTxt"></span></div>
         <div id="hud">
           <span class="chip" id="tapsChip">Taps left <b id="hudTapsLeft">0</b></span>
           <span class="chip">Par <b id="hudPar">0</b></span>
@@ -475,7 +485,7 @@
       var SCALE = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
 
       /* ================= levels ================= */
-      var TOTAL_LEVELS = 100;
+      var TOTAL_LEVELS = 300;
       var GROUPS = [
         { name: 'First Pops',    from: 1,  to: 8,   sub: 'Chunky boards, four colors, all flow.' },
         { name: 'Rainbow Guest', from: 9,  to: 16,  sub: 'A rainbow bubble joins the party at level 9.' },
@@ -485,7 +495,20 @@
         { name: 'Frosty Falls',  from: 41, to: 55,  sub: 'Icy bubbles arrive at level 41. Pop next to them to melt the ice.' },
         { name: 'Pop Parade',    from: 56, to: 70,  sub: 'All eight colors on wide, full boards.' },
         { name: 'Rainbow Rush',  from: 71, to: 85,  sub: 'The tallest boards yet, with extra rainbows.' },
-        { name: 'Pop Master Party', from: 86, to: 100, sub: 'The biggest boards of all. You are a Pop Master!' }
+        { name: 'Pop Master Party', from: 86, to: 100, sub: 'The biggest boards of all. You are a Pop Master!' },
+        { name: 'Bubble Beach',   from: 101, to: 115, sub: 'Sandy shores and splashy pops by the sea.' },
+        { name: 'Starlight Space', from: 116, to: 130, sub: 'Pop among the stars on taller boards.' },
+        { name: 'Jungle Pops',    from: 131, to: 145, sub: 'Deep in the jungle, the pops grow wild.' },
+        { name: 'Candy Clouds',   from: 146, to: 160, sub: 'Sweet, soft and extra poppy up in the clouds.' },
+        { name: 'Volcano Valley', from: 161, to: 175, sub: 'Hot boards! Booms love it here.' },
+        { name: 'Ocean Deep',     from: 176, to: 190, sub: 'Down where the big blue bubbles drift.' },
+        { name: 'Sunset Safari',  from: 191, to: 205, sub: 'Golden-hour pops out on the savanna.' },
+        { name: 'Crystal Caves',  from: 206, to: 220, sub: 'Sparkly crystals and echoing pops.' },
+        { name: 'Sky High',       from: 221, to: 235, sub: 'Way up high, where the air is poppy.' },
+        { name: 'Moonlight Garden', from: 236, to: 250, sub: 'Quiet garden pops under the moon.' },
+        { name: 'Thunder Peaks',  from: 251, to: 265, sub: 'Stormy summits with crackling booms.' },
+        { name: 'Rainbow Kingdom', from: 266, to: 280, sub: 'Rainbows everywhere in the royal court.' },
+        { name: 'Pop Legends',    from: 281, to: 300, sub: 'The grandest boards of all, for true Pop Legends.' }
       ];
       var GROUP_THEMES = [
         { band: '#FF5D8F', deep: '#C2255C', tint: '#FFE0EC' },
@@ -496,7 +519,20 @@
         { band: '#26C6DA', deep: '#0E6E80', tint: '#D8F6FB' },
         { band: '#F15BB5', deep: '#9E2B72', tint: '#FDE0F1' },
         { band: '#4A7DFF', deep: '#2B4FA6', tint: '#D9E6FF' },
-        { band: '#FFB400', deep: '#8F6200', tint: '#FFF0C2' }
+        { band: '#FFB400', deep: '#8F6200', tint: '#FFF0C2' },
+        { band: '#00A8B5', deep: '#046E78', tint: '#D6F5F7' },
+        { band: '#5B5BD6', deep: '#32328F', tint: '#E2E2FA' },
+        { band: '#3E9B2F', deep: '#1E5A15', tint: '#DFF6D8' },
+        { band: '#E87FB8', deep: '#9E3F78', tint: '#FBE4F1' },
+        { band: '#E4572E', deep: '#8F3312', tint: '#FDE4D8' },
+        { band: '#0077B6', deep: '#04486E', tint: '#D4EEFA' },
+        { band: '#D9A017', deep: '#85600A', tint: '#FAF0CC' },
+        { band: '#8E6CC8', deep: '#563C8C', tint: '#EBE1F9' },
+        { band: '#3A9AD9', deep: '#1B5B8C', tint: '#DFF2FC' },
+        { band: '#43A97B', deep: '#1E6647', tint: '#DEF5E9' },
+        { band: '#E3B505', deep: '#7A6100', tint: '#FBF3C4' },
+        { band: '#D6336C', deep: '#8C1D45', tint: '#FAE1EB' },
+        { band: '#7C4DBE', deep: '#472A75', tint: '#EADFF8' }
       ];
       function levelCfg(n) {
         if (n <= 8)   return { n: n, cols: 6, rows: 7,  colors: 4, rainbows: 0,              booms: 0, ices: 0, minBig: 3, minLargest: 5, maxLeftover: 2 };
@@ -507,7 +543,23 @@
         if (n <= 55)  return { n: n, cols: 9,  rows: 10, colors: 7, rainbows: 3, booms: 3, ices: 4, minBig: 4, minLargest: 7, maxLeftover: 7 };
         if (n <= 70)  return { n: n, cols: 10, rows: 10, colors: 8, rainbows: 3, booms: 4, ices: 6, minBig: 4, minLargest: 7, maxLeftover: 8 };
         if (n <= 85)  return { n: n, cols: 10, rows: 11, colors: 8, rainbows: 4, booms: 4, ices: 7, minBig: 4, minLargest: 8, maxLeftover: 9 };
-        return          { n: n, cols: 10, rows: 11, colors: 8, rainbows: 4, booms: 5, ices: 8, minBig: 5, minLargest: 8, maxLeftover: 10 };
+        if (n <= 100) return { n: n, cols: 10, rows: 11, colors: 8, rainbows: 4, booms: 5, ices: 8, minBig: 5, minLargest: 8, maxLeftover: 10 };
+        /* Levels 101-300: columns stay at 10 so bubbles keep the same chunky
+           size on a phone-width screen as levels 86-100; boards grow by rows
+           (11 -> 12) and by a slowly rising rainbow/boom/ice mix instead. */
+        if (n <= 115) return { n: n, cols: 10, rows: 11, colors: 8, rainbows: 4, booms: 5, ices: 8,  minBig: 5, minLargest: 8, maxLeftover: 10 };
+        if (n <= 130) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 4, booms: 5, ices: 9,  minBig: 5, minLargest: 8, maxLeftover: 11 };
+        if (n <= 145) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 5, booms: 6, ices: 9,  minBig: 5, minLargest: 9, maxLeftover: 11 };
+        if (n <= 160) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 5, booms: 6, ices: 10, minBig: 5, minLargest: 9, maxLeftover: 12 };
+        if (n <= 175) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 5, booms: 7, ices: 10, minBig: 5, minLargest: 9, maxLeftover: 12 };
+        if (n <= 190) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 6, booms: 7, ices: 11, minBig: 5, minLargest: 9, maxLeftover: 12 };
+        if (n <= 205) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 6, booms: 7, ices: 11, minBig: 5, minLargest: 9, maxLeftover: 12 };
+        if (n <= 220) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 6, booms: 8, ices: 12, minBig: 5, minLargest: 9, maxLeftover: 12 };
+        if (n <= 235) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 6, booms: 8, ices: 12, minBig: 5, minLargest: 9, maxLeftover: 13 };
+        if (n <= 250) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 7, booms: 8, ices: 12, minBig: 5, minLargest: 9, maxLeftover: 13 };
+        if (n <= 265) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 7, booms: 9, ices: 13, minBig: 5, minLargest: 9, maxLeftover: 13 };
+        if (n <= 280) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 7, booms: 9, ices: 13, minBig: 5, minLargest: 9, maxLeftover: 13 };
+        return          { n: n, cols: 10, rows: 12, colors: 8, rainbows: 8, booms: 10, ices: 14, minBig: 5, minLargest: 9, maxLeftover: 14 };
       }
 
       /* ================= rng ================= */
@@ -892,6 +944,21 @@
       /* ================= dom refs ================= */
       var $ = function (id) { return document.getElementById(id); };
       var topTitle = $('topTitle'), backBtn = $('backBtn'), mapScreen = $('mapScreen'), gameScreen = $('gameScreen');
+      var topbarEl = $('topbar'), groupLineEl = $('groupLine'), groupLineTxt = $('groupLineTxt');
+
+      /* The themed group a level belongs to, with that group's map colors,
+         so the level screen header can carry the group's accent. */
+      function groupFor(n) {
+        for (var i = 0; i < GROUPS.length; i++) {
+          if (n >= GROUPS[i].from && n <= GROUPS[i].to) return { g: GROUPS[i], t: GROUP_THEMES[i % GROUP_THEMES.length] };
+        }
+        var last = GROUPS.length - 1;
+        return { g: GROUPS[last], t: GROUP_THEMES[last % GROUP_THEMES.length] };
+      }
+      function hexA(hex, a) {
+        var r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+        return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+      }
       var boardEl = $('board'), arrowEl = $('arrowHint'), promptBar = $('promptBar'), promptText = $('promptText');
 
       /* ================= game state ================= */
@@ -1369,7 +1436,17 @@
         mapScreen.classList.toggle('hidden', which !== 'map');
         gameScreen.classList.toggle('hidden', which !== 'game');
         backBtn.classList.toggle('hidden', which !== 'game');
-        topTitle.textContent = which === 'map' ? 'Choose a level' : 'Level ' + cur.level;
+        if (which === 'map') {
+          topTitle.textContent = 'Choose a level';
+          topbarEl.style.removeProperty('--tb');
+        } else {
+          topTitle.textContent = 'Level ' + cur.level;
+          var gf = groupFor(cur.level);
+          groupLineTxt.textContent = gf.g.name;
+          groupLineEl.style.setProperty('--gc', gf.t.band);
+          groupLineEl.style.setProperty('--gdeep', gf.t.deep);
+          topbarEl.style.setProperty('--tb', hexA(gf.t.tint, 0.94));
+        }
         window.scrollTo(0, 0);
       }
       function startLevel(n, fresh) {
@@ -1424,7 +1501,7 @@
       function buildMap() {
         var total = 0;
         Object.keys(save.stars).forEach(function (k) { total += save.stars[k]; });
-        $('starTotalTxt').textContent = total + ' of 300 stars';
+        $('starTotalTxt').textContent = total + ' of ' + (TOTAL_LEVELS * 3) + ' stars';
         var html = '';
         GROUPS.forEach(function (g, gi) {
           var t = GROUP_THEMES[gi % GROUP_THEMES.length];
