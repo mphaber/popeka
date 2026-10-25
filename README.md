@@ -10,8 +10,8 @@ A bright, brain-off bubble-popping game for kids and adults. Tap any connected g
 - Forgiving throughout: unlimited undo, free restart, resume where you left off
 - No timers, no lives, no ads, no purchases
 
-Play: https://mphaber.github.io/rainbow-/
+Play: https://mphaber.github.io/poptastic/
 
-Note: this repository previously hosted Rainbow Rings, which was retired after playtesting; Rainbow Pop replaced it at the same address on Oct 24, 2026, grew to 100 levels the same day, and was renamed Poptastic! later that day (the web address stayed the same, so saved progress carries over).
+Note: this repository previously hosted Rainbow Rings, which was retired after playtesting; Rainbow Pop replaced it at the same address on Oct 24, 2026, grew to 100 levels and then 300 levels the same day, and was renamed Poptastic! later that day. The repository itself was renamed from rainbow- to poptastic on Oct 25, 2026, which moved the play address above; saved progress carries over because it is stored against the mphaber.github.io domain, not the repository path.
 
 Created by Matthew Haber / © 2026 Matthew Haber. All rights reserved.
