@@ -2,7 +2,7 @@
 
 A bright, brain-off bubble-popping game for kids and adults. Tap any connected group of two or more matching color bubbles to pop the whole group, bubbles fall, empty columns slide together, and the goal is to clear the board before your taps run out. Every color carries its own symbol, leftover single bubbles pop themselves in a celebration finish, and special bubbles join along the way: a wild rainbow bubble (level 9), Boom bubbles that splash-pop everything touching their group (level 31), and Ice bubbles that melt after two pops next to them (level 41).
 
-- 300 short levels in twenty-two themed groups, every board generated to be clearable
+- 500 short levels in thirty-five themed groups, every board generated to be clearable
 - Levels unlock one by one: beat a level to open the next, finished levels stay replayable
 - A simple on-screen tutorial the first time each new bubble appears
 - A generous tap budget per level; run out and you simply try again

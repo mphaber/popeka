@@ -196,6 +196,11 @@
         pointer-events: none; line-height: 1;
       }
       .badge-boom { background: #2E2447; color: #FFD23F; border: 2px solid #FFD23F; }
+      .badge-zap { background: #FFD23F; color: #7A4D00; border: 2px solid #2E2447; font-family: "Nunito", sans-serif; }
+      .face.twin .sym { position: absolute; font-size: 0.46em; z-index: 1; }
+      .face.twin .sym-a { left: 15%; top: 11%; }
+      .face.twin .sym-b { right: 15%; bottom: 11%; }
+      .intro-bubble .face.twin .sym { font-size: 25px; }
       .veil {
         position: absolute; inset: 0; border-radius: 50%; z-index: 2; pointer-events: none;
         background: linear-gradient(135deg, rgba(210, 240, 255, 0.88), rgba(140, 205, 245, 0.72));
@@ -369,7 +374,7 @@
 
     <main>
       <section id="mapScreen">
-        <div><span id="starTotal"><span class="st">★</span><span id="starTotalTxt">0 of 900 stars</span></span></div>
+        <div><span id="starTotal"><span class="st">★</span><span id="starTotalTxt">0 of 1500 stars</span></span></div>
         <div id="mapGroups"></div>
       </section>
 
@@ -418,6 +423,8 @@
         <p>Rainbow bubbles match every color at once.</p>
         <p>Boom bubbles (with the spark badge) pop everything touching the group when their group pops.</p>
         <p>Ice bubbles do not pop until two pops next to them melt the ice away.</p>
+        <p>Zap bubbles (with the lightning badge) zap their whole row: pop one with its group and every bubble in its row pops too. Zaps can set off Booms — and other Zaps!</p>
+        <p>Twin bubbles are two colors at once. A Twin pops with a group of either of its colors, and can connect two groups of the same color into one big group.</p>
         <p>Finish a level to unlock the next one. Finished levels can be replayed any time.</p>
         <p>Each level gives you a tap budget. Run out of taps and you can simply try the level again.</p>
         <p>Finish in fewer taps to earn more stars.</p>
@@ -485,7 +492,7 @@
       var SCALE = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
 
       /* ================= levels ================= */
-      var TOTAL_LEVELS = 300;
+      var TOTAL_LEVELS = 500;
       var GROUPS = [
         { name: 'First Pops',    from: 1,  to: 8,   sub: 'Chunky boards, four colors, all flow.' },
         { name: 'Rainbow Guest', from: 9,  to: 16,  sub: 'A rainbow bubble joins the party at level 9.' },
@@ -508,7 +515,20 @@
         { name: 'Moonlight Garden', from: 236, to: 250, sub: 'Quiet garden pops under the moon.' },
         { name: 'Thunder Peaks',  from: 251, to: 265, sub: 'Stormy summits with crackling booms.' },
         { name: 'Rainbow Kingdom', from: 266, to: 280, sub: 'Rainbows everywhere in the royal court.' },
-        { name: 'Pop Legends',    from: 281, to: 300, sub: 'The grandest boards of all, for true Pop Legends.' }
+        { name: 'Pop Legends',    from: 281, to: 300, sub: 'The grandest boards of all, for true Pop Legends.' },
+        { name: 'Lightning Reef', from: 301, to: 315, sub: 'Zap bubbles arrive at level 301. Whole rows, zapped!' },
+        { name: 'Firefly Swamp',  from: 316, to: 330, sub: 'Glowy swamp pops, with zaps crackling through the mist.' },
+        { name: 'Twin Tides',     from: 331, to: 345, sub: 'Twin bubbles arrive at level 331 — two colors in one bubble!' },
+        { name: 'Carnival Cove',  from: 346, to: 360, sub: 'Step right up! Every pop wins a prize at the carnival.' },
+        { name: 'Aurora Skies',   from: 361, to: 375, sub: 'Pops that shimmer and dance like the northern lights.' },
+        { name: 'Bubble Bakery',  from: 376, to: 390, sub: 'Fresh-baked boards, warm and poppy.' },
+        { name: 'Treasure Cove',  from: 391, to: 405, sub: 'X marks the pop, deep in the cove.' },
+        { name: 'Dino Pops',      from: 406, to: 420, sub: 'Stomp, chomp and pop with the dinosaurs.' },
+        { name: 'Snowglobe Vale', from: 421, to: 435, sub: 'Shake the globe and watch the pops fall.' },
+        { name: 'Neon Nights',    from: 436, to: 450, sub: 'Bright lights and big pops, after dark.' },
+        { name: 'Atlantis Deep',  from: 451, to: 465, sub: 'Sunken-city pops in the deep, deep blue.' },
+        { name: 'Rainbow Summit', from: 466, to: 480, sub: 'Nearly at the very top — rainbows all the way up.' },
+        { name: 'Grand Pop Finale', from: 481, to: 500, sub: 'The grandest pops of all, for true Pop Legends!' }
       ];
       var GROUP_THEMES = [
         { band: '#FF5D8F', deep: '#C2255C', tint: '#FFE0EC' },
@@ -532,7 +552,20 @@
         { band: '#43A97B', deep: '#1E6647', tint: '#DEF5E9' },
         { band: '#E3B505', deep: '#7A6100', tint: '#FBF3C4' },
         { band: '#D6336C', deep: '#8C1D45', tint: '#FAE1EB' },
-        { band: '#7C4DBE', deep: '#472A75', tint: '#EADFF8' }
+        { band: '#7C4DBE', deep: '#472A75', tint: '#EADFF8' },
+        { band: '#FFD23F', deep: '#8A6100', tint: '#FFF3C4' },
+        { band: '#B5C62E', deep: '#5F6B0E', tint: '#F4F8D8' },
+        { band: '#2EC4B6', deep: '#0E6B62', tint: '#D9F6F2' },
+        { band: '#FF5964', deep: '#A3232F', tint: '#FFE0E3' },
+        { band: '#3ED6A5', deep: '#14755A', tint: '#D9F7EC' },
+        { band: '#E8A87C', deep: '#9A5B2E', tint: '#FBEEDD' },
+        { band: '#C9A227', deep: '#7A5E0B', tint: '#F7EECB' },
+        { band: '#6A994E', deep: '#386641', tint: '#E4F2DC' },
+        { band: '#8ECAE6', deep: '#3D6E8F', tint: '#E3F3FB' },
+        { band: '#FF2E88', deep: '#8F1050', tint: '#FFE0EF' },
+        { band: '#118AB2', deep: '#0B556E', tint: '#D8F0F8' },
+        { band: '#B5179E', deep: '#6E0E60', tint: '#F9DFF3' },
+        { band: '#7209B7', deep: '#3F0666', tint: '#EBDCFA' }
       ];
       function levelCfg(n) {
         if (n <= 8)   return { n: n, cols: 6, rows: 7,  colors: 4, rainbows: 0,              booms: 0, ices: 0, minBig: 3, minLargest: 5, maxLeftover: 2 };
@@ -559,7 +592,25 @@
         if (n <= 250) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 7, booms: 8, ices: 12, minBig: 5, minLargest: 9, maxLeftover: 13 };
         if (n <= 265) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 7, booms: 9, ices: 13, minBig: 5, minLargest: 9, maxLeftover: 13 };
         if (n <= 280) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 7, booms: 9, ices: 13, minBig: 5, minLargest: 9, maxLeftover: 13 };
-        return          { n: n, cols: 10, rows: 12, colors: 8, rainbows: 8, booms: 10, ices: 14, minBig: 5, minLargest: 9, maxLeftover: 14 };
+        if (n <= 300) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 8, booms: 10, ices: 14, minBig: 5, minLargest: 9, maxLeftover: 14 };
+        /* Levels 301-500: boards hold at 10x12 (the layout math shows a 13th
+           row would push bubbles under the current on-screen minimum on
+           phone-height screens). Zap bubbles arrive at 301 and Twin bubbles
+           at 331; both densities climb gently while rainbows, Booms and Ice
+           keep appearing throughout, all six specials together in the finale. */
+        if (n <= 315) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 7, booms: 9,  ices: 13, zaps: n <= 305 ? 2 : n <= 310 ? 3 : 4, twins: 0, minBig: 5, minLargest: 9, maxLeftover: 14 };
+        if (n <= 330) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 7, booms: 9,  ices: 13, zaps: n <= 322 ? 4 : 5, twins: 0, minBig: 5, minLargest: 9, maxLeftover: 14 };
+        if (n <= 345) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 7, booms: 9,  ices: 13, zaps: 5, twins: n <= 335 ? 4 : n <= 340 ? 5 : 6, minBig: 5, minLargest: 9, maxLeftover: 14 };
+        if (n <= 360) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 7, booms: 9,  ices: 13, zaps: 6, twins: 6,  minBig: 5, minLargest: 9, maxLeftover: 15 };
+        if (n <= 375) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 8, booms: 10, ices: 14, zaps: 6, twins: 7,  minBig: 5, minLargest: 9, maxLeftover: 15 };
+        if (n <= 390) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 8, booms: 10, ices: 14, zaps: 6, twins: 8,  minBig: 5, minLargest: 9, maxLeftover: 15 };
+        if (n <= 405) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 8, booms: 10, ices: 14, zaps: 7, twins: 8,  minBig: 5, minLargest: 9, maxLeftover: 15 };
+        if (n <= 420) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 8, booms: 10, ices: 14, zaps: 7, twins: 9,  minBig: 5, minLargest: 9, maxLeftover: 16 };
+        if (n <= 435) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 8, booms: 10, ices: 15, zaps: 7, twins: 9,  minBig: 5, minLargest: 9, maxLeftover: 16 };
+        if (n <= 450) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 8, booms: 10, ices: 15, zaps: 8, twins: 10, minBig: 5, minLargest: 9, maxLeftover: 16 };
+        if (n <= 465) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 8, booms: 11, ices: 15, zaps: 8, twins: 10, minBig: 5, minLargest: 9, maxLeftover: 16 };
+        if (n <= 480) return { n: n, cols: 10, rows: 12, colors: 8, rainbows: 9, booms: 11, ices: 15, zaps: 8, twins: 11, minBig: 5, minLargest: 9, maxLeftover: 16 };
+        return          { n: n, cols: 10, rows: 12, colors: 8, rainbows: 9, booms: 11, ices: 16, zaps: 9, twins: 12, minBig: 5, minLargest: 9, maxLeftover: 17 };
       }
 
       /* ================= rng ================= */
@@ -575,22 +626,39 @@
       /* ================= board logic (plain cells {c: color, b: boom, i: ice 0/1/2}; board[c][r], r=0 is bottom) ================= */
       function isFrozen(cell) { return !!cell && cell.i > 0; }
       function clonePlain(board) {
-        return board.map(function (col) { return col.map(function (cell) { return { c: cell.c, b: !!cell.b, i: cell.i || 0 }; }); });
+        return board.map(function (col) { return col.map(function (cell) { return { c: cell.c, b: !!cell.b, i: cell.i || 0, z: !!cell.z, t: cell.t ? [cell.t[0], cell.t[1]] : null }; }); });
       }
+      /* The colors a cell can match as: a Twin carries two, everything else one. */
+      function cellColors(cell) { return cell.t ? cell.t : [cell.c]; }
       function floodGroup(board, sc, sr, seen) {
         var comp = [];
         if (isFrozen(board[sc][sr])) {
           if (seen) seen[sc + ',' + sr] = true;
           return [[sc, sr]];
         }
+        /* Each visited cell spreads a "carry" set: a plain cell spreads its
+           own color, a rainbow spreads wild (matches everything), and a Twin
+           spreads only the single color it was reached by — its first color
+           when it seeds the flood (a direct tap) or when a rainbow reaches
+           it. So a Twin bridges two clusters of ONE of its colors and can
+           never pull both of its colors' groups into one pop. For boards
+           without Twins the visited set is exactly the connected component
+           the original flood produced. */
         var local = {};
+        var carry = {};
+        function carryFor(cell, via) {
+          if (!cell.t && cell.c === RAINBOW) return 'W';
+          if (cell.t) return [via === null || via === 'W' ? cell.t[0] : via];
+          return [cell.c];
+        }
         var stack = [[sc, sr]];
         local[sc + ',' + sr] = true;
+        carry[sc + ',' + sr] = carryFor(board[sc][sr], null);
         while (stack.length) {
           var cur = stack.pop();
           var x = cur[0], y = cur[1];
           comp.push([x, y]);
-          var v = board[x][y].c;
+          var myCarry = carry[x + ',' + y];
           var dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
           for (var i = 0; i < 4; i++) {
             var nx = x + dirs[i][0], ny = y + dirs[i][1];
@@ -599,8 +667,16 @@
             if (local[k]) continue;
             var ncell = board[nx][ny];
             if (isFrozen(ncell)) continue;
-            var nv = ncell.c;
-            if (nv === RAINBOW || v === RAINBOW || nv === v) { local[k] = true; stack.push([nx, ny]); }
+            var join = false, via = null;
+            if (myCarry === 'W') { join = true; via = 'W'; }
+            else if (!ncell.t && ncell.c === RAINBOW) { join = true; }
+            else {
+              var ncols = cellColors(ncell);
+              for (var j = 0; j < ncols.length; j++) {
+                if (myCarry.indexOf(ncols[j]) >= 0) { join = true; via = ncols[j]; break; }
+              }
+            }
+            if (join) { local[k] = true; carry[k] = carryFor(ncell, via); stack.push([nx, ny]); }
           }
         }
         if (seen) comp.forEach(function (p) { seen[p[0] + ',' + p[1]] = true; });
@@ -622,59 +698,97 @@
          Chaining follows the established behavior: a Boom bubble brought in by
          a splash pops its own 8 neighbors too, and Booms caught in that splash
          chain on the same way.
-         Frozen bubbles are never splash-popped; instead, any frozen bubble directly
-         next to (4-direction) any popped bubble, whether a group member or a
-         splash-popped bubble, gets one crack, exactly as for a group pop. */
+         Zap bubbles extend the same chaining: a Zap that pops — in the group,
+         in a splash, or in another Zap's row — fires its ENTIRE ROW (same row
+         index in every column) exactly once per pop, and Booms and Zaps caught
+         in a row chain on until nothing new fires.
+         Frozen bubbles are never splash-popped or zapped; instead, any frozen
+         bubble directly next to (4-direction) any popped bubble, or sitting in
+         a zapped row, gets exactly one crack, exactly as for a group pop. Ice
+         that melts in a resolution does not retroactively pop in that same
+         resolution (it was never added to the popped set). */
       function resolvePop(board, cells) {
         var set = {}, popped = [];
-        cells.forEach(function (p) {
-          var k = p[0] + ',' + p[1];
-          if (!set[k]) { set[k] = true; popped.push(p); }
-        });
-        function addSplash(cx, cy) {
-          var added = [];
+        function tryAdd(c, r) {
+          if (c < 0 || c >= board.length || r < 0 || r >= board[c].length) return null;
+          var k = c + ',' + r;
+          if (set[k]) return null;
+          if (isFrozen(board[c][r])) return null;
+          set[k] = true;
+          var p = [c, r];
+          popped.push(p);
+          return p;
+        }
+        cells.forEach(function (p) { tryAdd(p[0], p[1]); });
+        var initial = popped.slice();
+        var firedBoom = {}, firedZap = {}, zapRows = {};
+        var queue = [];
+        function fireBoom(c, r) {
+          var k = c + ',' + r;
+          if (firedBoom[k]) return;
+          firedBoom[k] = true;
           for (var dx = -1; dx <= 1; dx++) {
             for (var dy = -1; dy <= 1; dy++) {
               if (!dx && !dy) continue;
-              var nx = cx + dx, ny = cy + dy;
-              if (nx < 0 || nx >= board.length || ny < 0 || ny >= board[nx].length) continue;
-              var k = nx + ',' + ny;
-              if (set[k]) continue;
-              if (isFrozen(board[nx][ny])) continue;
-              set[k] = true;
-              var np = [nx, ny];
-              popped.push(np);
-              added.push(np);
+              var np = tryAdd(c + dx, r + dy);
+              if (np) queue.push(np);
             }
           }
-          return added;
         }
-        var groupHasBoom = popped.some(function (p) {
+        function fireZap(c, r) {
+          var k = c + ',' + r;
+          if (firedZap[k]) return;
+          firedZap[k] = true;
+          zapRows[r] = true;
+          for (var cc = 0; cc < board.length; cc++) {
+            if (r < board[cc].length) {
+              var np = tryAdd(cc, r);
+              if (np) queue.push(np);
+            }
+          }
+        }
+        var groupHasBoom = initial.some(function (p) {
           var cell = board[p[0]] && board[p[0]][p[1]];
           return cell && cell.b && !isFrozen(cell);
         });
         if (groupHasBoom) {
-          var queue = [];
-          popped.slice().forEach(function (p) {
-            addSplash(p[0], p[1]).forEach(function (np) { queue.push(np); });
+          initial.forEach(function (p) {
+            for (var dx = -1; dx <= 1; dx++) {
+              for (var dy = -1; dy <= 1; dy++) {
+                if (!dx && !dy) continue;
+                var np = tryAdd(p[0] + dx, p[1] + dy);
+                if (np) queue.push(np);
+              }
+            }
+            var cell = board[p[0]][p[1]];
+            if (cell && cell.b) firedBoom[p[0] + ',' + p[1]] = true;
           });
-          while (queue.length) {
-            var curp = queue.pop();
-            var cell = board[curp[0]] && board[curp[0]][curp[1]];
-            if (!cell || !cell.b || isFrozen(cell)) continue;
-            addSplash(curp[0], curp[1]).forEach(function (np) { queue.push(np); });
-          }
+        }
+        initial.forEach(function (p) {
+          var cell = board[p[0]] && board[p[0]][p[1]];
+          if (cell && cell.z && !isFrozen(cell)) fireZap(p[0], p[1]);
+        });
+        while (queue.length) {
+          var curp = queue.pop();
+          var cell = board[curp[0]] && board[curp[0]][curp[1]];
+          if (!cell || isFrozen(cell)) continue;
+          if (cell.b) fireBoom(curp[0], curp[1]);
+          if (cell.z) fireZap(curp[0], curp[1]);
         }
         var crackSet = {}, cracked = [];
+        function crack(c, r) {
+          if (c < 0 || c >= board.length || r < 0 || r >= board[c].length) return;
+          var k = c + ',' + r;
+          if (set[k] || crackSet[k]) return;
+          if (isFrozen(board[c][r])) { crackSet[k] = true; cracked.push([c, r]); }
+        }
         var dirs4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
         popped.forEach(function (p) {
-          for (var i = 0; i < 4; i++) {
-            var nx = p[0] + dirs4[i][0], ny = p[1] + dirs4[i][1];
-            if (nx < 0 || nx >= board.length || ny < 0 || ny >= board[nx].length) continue;
-            var k = nx + ',' + ny;
-            if (set[k] || crackSet[k]) continue;
-            if (isFrozen(board[nx][ny])) { crackSet[k] = true; cracked.push([nx, ny]); }
-          }
+          for (var i = 0; i < 4; i++) crack(p[0] + dirs4[i][0], p[1] + dirs4[i][1]);
+        });
+        Object.keys(zapRows).forEach(function (rk) {
+          var r = parseInt(rk, 10);
+          for (var c = 0; c < board.length; c++) crack(c, r);
         });
         return { popped: popped, cracked: cracked };
       }
@@ -689,7 +803,7 @@
           var nc = [];
           col.forEach(function (cell, r) {
             if (rm[c + ',' + r]) return;
-            var copy = { c: cell.c, b: !!cell.b, i: cell.i || 0 };
+            var copy = { c: cell.c, b: !!cell.b, i: cell.i || 0, z: !!cell.z, t: cell.t ? [cell.t[0], cell.t[1]] : null };
             if (crackSet[c + ',' + r]) copy.i = Math.max(0, copy.i - 1);
             nc.push(copy);
           });
@@ -698,13 +812,13 @@
         return { board: out, popped: res.popped, cracked: res.cracked };
       }
       function groupStats(board) {
-        var groups = findGroups(board), big = 0, largest = 0, cells = 0, booms = 0, ices = 0;
+        var groups = findGroups(board), big = 0, largest = 0, cells = 0, booms = 0, ices = 0, zaps = 0, twins = 0;
         groups.forEach(function (g) { if (g.length >= 4) big++; if (g.length > largest) largest = g.length; });
         board.forEach(function (col) {
           cells += col.length;
-          col.forEach(function (cell) { if (cell.b) booms++; if (cell.i > 0) ices++; });
+          col.forEach(function (cell) { if (cell.b) booms++; if (cell.i > 0) ices++; if (cell.z) zaps++; if (cell.t) twins++; });
         });
-        return { big: big, largest: largest, cells: cells, booms: booms, ices: ices, groups: groups };
+        return { big: big, largest: largest, cells: cells, booms: booms, ices: ices, zaps: zaps, twins: twins, groups: groups };
       }
       function solveBoard(board, smallestFirst) {
         var b = clonePlain(board);
@@ -766,6 +880,29 @@
           if (cell.c !== RAINBOW && !cell.b && cell.i === 0) { cell.i = 2; placed++; }
         }
       }
+      function placeZaps(board, cfg, rng) {
+        var placed = 0, guard = 0;
+        while (placed < (cfg.zaps || 0) && guard++ < 300) {
+          var c = Math.floor(rng() * board.length);
+          var r = Math.floor(rng() * board[c].length);
+          var cell = board[c][r];
+          if (cell.c !== RAINBOW && !cell.b && !cell.z && !cell.t && cell.i === 0) { cell.z = true; placed++; }
+        }
+      }
+      function placeTwins(board, cfg, rng) {
+        var placed = 0, guard = 0;
+        while (placed < (cfg.twins || 0) && guard++ < 400) {
+          var c = Math.floor(rng() * board.length);
+          var r = Math.floor(rng() * board[c].length);
+          var cell = board[c][r];
+          if (cell.c !== RAINBOW && !cell.b && !cell.z && !cell.t && cell.i === 0) {
+            var c2 = Math.floor(rng() * (cfg.colors - 1));
+            if (c2 >= cell.c) c2++;
+            cell.t = [cell.c, c2];
+            placed++;
+          }
+        }
+      }
       function candScore(cand) { return cand.stats.big * 12 + cand.stats.largest * 2 - cand.leftover * 6; }
       function budgetFor(par, sloppyPops) {
         var budget = Math.max(12, par * 2 + 6);
@@ -781,6 +918,8 @@
           placeRainbows(board, cfg, rng);
           placeBooms(board, cfg, rng);
           placeIces(board, cfg, rng);
+          placeZaps(board, cfg, rng);
+          placeTwins(board, cfg, rng);
           var st = groupStats(board);
           var sol = solveBoard(board, false);
           var cand = { board: board, par: sol.pops, leftover: sol.leftover, stats: st };
@@ -929,6 +1068,12 @@
         tone(520, { dur: 0.07, type: 'square', vol: 0.05, delay: 0.05 });
         tone(240, { slideTo: 150, dur: 0.09, type: 'sine', vol: 0.10, delay: 0.02 });
       }
+      function playZap() {
+        if (!ensureAudio()) return;
+        tone(1500, { slideTo: 320, dur: 0.11, type: 'sawtooth', vol: 0.055 });
+        tone(950, { slideTo: 190, dur: 0.15, type: 'square', vol: 0.045, delay: 0.035 });
+        tone(2100, { slideTo: 700, dur: 0.06, type: 'square', vol: 0.03, delay: 0.07 });
+      }
       function playOut() {
         if (!ensureAudio()) return;
         tone(SCALE[4], { dur: 0.3, type: 'triangle', vol: 0.16 });
@@ -966,10 +1111,10 @@
       var bubbleEls = {}, nextId = 1, undoStack = [], animating = false, finished = false;
       var cell = 44, promptMode = null, tutCells = null;
 
-      function plainOf(board) { return board.map(function (col) { return col.map(function (b) { return { c: b.color, b: !!b.boom, i: b.ice || 0 }; }); }); }
+      function plainOf(board) { return board.map(function (col) { return col.map(function (b) { return { c: b.color, b: !!b.boom, i: b.ice || 0, z: !!b.zap, t: b.twin ? [b.twin[0], b.twin[1]] : null }; }); }); }
       function liveFromPlain(v) {
-        if (typeof v === 'number') return { id: nextId++, color: v, boom: false, ice: 0 };
-        return { id: nextId++, color: v.c, boom: !!v.b, ice: v.i || 0 };
+        if (typeof v === 'number') return { id: nextId++, color: v, boom: false, ice: 0, zap: false, twin: null };
+        return { id: nextId++, color: v.c, boom: !!v.b, ice: v.i || 0, zap: !!v.z, twin: v.t ? [v.t[0], v.t[1]] : null };
       }
       function isUnlocked(n) {
         if (n <= 1) return true;
@@ -984,8 +1129,10 @@
       /* ================= rendering ================= */
       function updateFaceVisual(el, bub, bubPx) {
         var face = el.firstChild;
-        var label = bub.color === RAINBOW ? 'Rainbow bubble' : PALETTE[bub.color].name + ' bubble';
+        var label = bub.twin ? 'Twin bubble, ' + PALETTE[bub.twin[0]].name + ' and ' + PALETTE[bub.twin[1]].name
+          : bub.color === RAINBOW ? 'Rainbow bubble' : PALETTE[bub.color].name + ' bubble';
         if (bub.boom) label += ', boom';
+        if (bub.zap) label += ', zap';
         if (bub.ice > 0) label += ', frozen in ice';
         el.setAttribute('aria-label', label);
         var badge = face.querySelector('.badge-boom');
@@ -998,6 +1145,16 @@
           }
           badge.style.fontSize = Math.max(9, Math.round(bubPx * 0.36)) + 'px';
         } else if (badge) badge.remove();
+        var zbadge = face.querySelector('.badge-zap');
+        if (bub.zap && !(bub.ice > 0)) {
+          if (!zbadge) {
+            zbadge = document.createElement('span');
+            zbadge.className = 'badge badge-zap';
+            zbadge.textContent = '⚡';
+            face.appendChild(zbadge);
+          }
+          zbadge.style.fontSize = Math.max(9, Math.round(bubPx * 0.34)) + 'px';
+        } else if (zbadge) zbadge.remove();
         var veil = face.querySelector('.veil');
         if (bub.ice > 0) {
           if (!veil) {
@@ -1010,18 +1167,34 @@
           veil.style.fontSize = Math.max(10, Math.round(bubPx * 0.42)) + 'px';
         } else if (veil) veil.remove();
       }
+      function twinFaceBg(c1, c2) {
+        return 'radial-gradient(circle at 32% 26%, rgba(255,255,255,0.55), rgba(255,255,255,0) 52%), radial-gradient(circle at 50% 118%, rgba(0,0,0,0.20), rgba(0,0,0,0) 55%), linear-gradient(135deg, ' + PALETTE[c1].hex + ' 0 50%, ' + PALETTE[c2].hex + ' 50% 100%)';
+      }
       function makeBubble(bub) {
         var el = document.createElement('button');
         el.className = 'bubble';
         el.type = 'button';
-        el.setAttribute('aria-label', bub.color === RAINBOW ? 'Rainbow bubble' : PALETTE[bub.color].name + ' bubble');
+        el.setAttribute('aria-label', bub.twin ? 'Twin bubble' : bub.color === RAINBOW ? 'Rainbow bubble' : PALETTE[bub.color].name + ' bubble');
         var face = document.createElement('div');
-        face.className = 'face' + (bub.color === RAINBOW ? ' rainbow' : '');
-        if (bub.color !== RAINBOW) face.style.background = 'radial-gradient(circle at 32% 26%, rgba(255,255,255,0.55), rgba(255,255,255,0) 52%), radial-gradient(circle at 50% 118%, rgba(0,0,0,0.20), rgba(0,0,0,0) 55%), ' + PALETTE[bub.color].hex;
-        var sym = document.createElement('span');
-        sym.className = 'sym';
-        sym.textContent = bub.color === RAINBOW ? '✦' : PALETTE[bub.color].sym;
-        face.appendChild(sym);
+        if (bub.twin) {
+          face.className = 'face twin';
+          face.style.background = twinFaceBg(bub.twin[0], bub.twin[1]);
+          var symA = document.createElement('span');
+          symA.className = 'sym sym-a';
+          symA.textContent = PALETTE[bub.twin[0]].sym;
+          face.appendChild(symA);
+          var symB = document.createElement('span');
+          symB.className = 'sym sym-b';
+          symB.textContent = PALETTE[bub.twin[1]].sym;
+          face.appendChild(symB);
+        } else {
+          face.className = 'face' + (bub.color === RAINBOW ? ' rainbow' : '');
+          if (bub.color !== RAINBOW) face.style.background = 'radial-gradient(circle at 32% 26%, rgba(255,255,255,0.55), rgba(255,255,255,0) 52%), radial-gradient(circle at 50% 118%, rgba(0,0,0,0.20), rgba(0,0,0,0) 55%), ' + PALETTE[bub.color].hex;
+          var sym = document.createElement('span');
+          sym.className = 'sym';
+          sym.textContent = bub.color === RAINBOW ? '✦' : PALETTE[bub.color].sym;
+          face.appendChild(sym);
+        }
         el.appendChild(face);
         el.addEventListener('pointerdown', function (ev) { ev.preventDefault(); onBubbleTap(bub.id); });
         return el;
@@ -1045,7 +1218,7 @@
             if (!el) { el = makeBubble(bub); bubbleEls[bub.id] = el; boardEl.appendChild(el); }
             el.style.width = bubPx + 'px';
             el.style.height = bubPx + 'px';
-            el.style.fontSize = Math.round(bubPx * (bub.color === 1 ? 0.30 : 0.5)) + 'px';
+            el.style.fontSize = Math.round(bubPx * (bub.twin ? 0.5 : bub.color === 1 ? 0.30 : 0.5)) + 'px';
             updateFaceVisual(el, bub, bubPx);
             el.style.transform = 'translate(' + (c * cell + 1.5) + 'px,' + ((rows - 1 - r) * cell + 1.5) + 'px)';
             el.style.zIndex = 1;
@@ -1198,6 +1371,34 @@
             return out;
           },
           ringArrow: false
+        },
+        zap: {
+          title: 'Meet the Zap Bubble!',
+          text: 'See the lightning badge? A zap bubble pops with its color group like any bubble — but it also zaps its whole row! Every bubble in the row pops too. Zaps can set off Booms, and even other Zaps!',
+          reminder: 'Zap bubbles zap their whole row!',
+          visual: function () {
+            return '<div class="intro-bubble"><div class="face" style="background:radial-gradient(circle at 32% 26%, rgba(255,255,255,0.55), rgba(255,255,255,0) 52%), radial-gradient(circle at 50% 118%, rgba(0,0,0,0.20), rgba(0,0,0,0) 55%), ' + PALETTE[1].hex + '"><span class="sym">' + PALETTE[1].sym + '</span><span class="badge badge-zap">⚡</span></div></div>';
+          },
+          cells: function () {
+            var out = [];
+            cur.board.forEach(function (col, c) { col.forEach(function (b, r) { if (b.zap) out.push([c, r]); }); });
+            return out;
+          },
+          ringArrow: false
+        },
+        twin: {
+          title: 'Meet the Twin Bubble!',
+          text: 'A twin bubble is two colors at once! It pops with a group of either of its colors, and it can connect two groups of the same color into one big group. Tap a twin itself and it pops with its first color — the one on the top left.',
+          reminder: 'Twin bubbles are two colors at once!',
+          visual: function () {
+            return '<div class="intro-bubble"><div class="face twin" style="background:' + twinFaceBg(0, 5) + '"><span class="sym sym-a">' + PALETTE[0].sym + '</span><span class="sym sym-b">' + PALETTE[5].sym + '</span></div></div>';
+          },
+          cells: function () {
+            var out = [];
+            cur.board.forEach(function (col, c) { col.forEach(function (b, r) { if (b.twin) out.push([c, r]); }); });
+            return out;
+          },
+          ringArrow: false
         }
       };
       var pendingIntro = null;
@@ -1249,6 +1450,18 @@
             save.intro.ice = true; persist();
             showIntro('ice');
           }
+        } else if (n === 301 && !save.intro.zap) {
+          var hasZap = plainOf(cur.board).some(function (col) { return col.some(function (cell) { return cell.z; }); });
+          if (hasZap) {
+            save.intro.zap = true; persist();
+            showIntro('zap');
+          }
+        } else if (n === 331 && !save.intro.twin) {
+          var hasTwin = plainOf(cur.board).some(function (col) { return col.some(function (cell) { return cell.t; }); });
+          if (hasTwin) {
+            save.intro.twin = true; persist();
+            showIntro('twin');
+          }
         }
       }
       function afterFirstPopTutorial() {
@@ -1286,7 +1499,7 @@
         ensureAudio();
         if (animating || finished) return;
         if (pendingIntro) return;
-        if (promptMode === 'rainbow' || promptMode === 'boom' || promptMode === 'ice') hidePrompt();
+        if (promptMode === 'rainbow' || promptMode === 'boom' || promptMode === 'ice' || promptMode === 'zap' || promptMode === 'twin') hidePrompt();
         var pos = locate(id);
         if (!pos) return;
         var plain = plainOf(cur.board);
@@ -1318,6 +1531,7 @@
         cur.taps++;
         cur.score += pts;
         playPop(colorIdx, n);
+        if (popped.some(function (p) { var cell = plain[p[0]] && plain[p[0]][p[1]]; return cell && cell.z; })) playZap();
         if (cracked.length) playCrack();
         var label = '+' + pts + (n >= 12 ? '  Mega pop!' : n >= 8 ? '  Huge pop!' : n >= 5 ? '  Big pop!' : '');
         spawnFloat(popped, label, n >= 5);
@@ -1587,6 +1801,8 @@
         html += '<div><span class="dot rainbow"><span class="sym">✦</span></span>Rainbow (wild)</div>';
         html += '<div><span class="dot" style="background:#FF9F2E"><span class="sym">✸</span></span>Boom (spark badge)</div>';
         html += '<div><span class="dot" style="background:#AEE3F7"><span class="sym" style="color:#3D7EA6;text-shadow:none">❄</span></span>Ice (frozen)</div>';
+        html += '<div><span class="dot" style="background:#FF9F2E"><span class="sym">⚡</span></span>Zap (row badge)</div>';
+        html += '<div><span class="dot" style="background:linear-gradient(135deg,#FF5252 50%,#4A7DFF 50%)"><span class="sym" style="font-size:10px">★☾</span></span>Twin (two colors)</div>';
         $('legend').innerHTML = html;
       })();
 
@@ -1625,7 +1841,7 @@
             out.push({ level: n, cols: g.board.length, cells: g.stats.cells, par: g.par, sloppy: g.sloppy, budget: g.budget,
                        parWithinBudget: g.par <= g.budget, sloppyWithinBudget: g.sloppy <= g.budget,
                        leftoverAfterSolver: g.leftover, bigGroups: g.stats.big, largestGroup: g.stats.largest,
-                       booms: g.stats.booms, ices: g.stats.ices });
+                       booms: g.stats.booms, ices: g.stats.ices, zaps: g.stats.zaps, twins: g.stats.twins });
           }
           return out;
         }
