@@ -358,24 +358,6 @@
         .home-logo .hl { animation: none !important; }
       }
 
-      /* ---------- guest banner ---------- */
-      #guestBanner {
-        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-        background: #2E2447; color: #FFF8EE; border-radius: 14px;
-        padding: 8px 12px; margin-bottom: 12px; font-weight: 800; font-size: 14px;
-      }
-      #guestBanner .gb-note { flex: 1; opacity: 0.85; font-weight: 700; font-size: 12.5px; }
-      #guestExitBtn {
-        position: relative; overflow: hidden; border: 2px solid #FFF8EE; background: transparent;
-        color: #FFF8EE; border-radius: 999px; padding: 7px 14px; font-family: inherit;
-        font-weight: 800; font-size: 13px; cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none;
-      }
-      #guestExitBtn .fill {
-        position: absolute; left: 0; top: 0; bottom: 0; width: 0%;
-        background: rgba(255, 255, 255, 0.38); pointer-events: none;
-      }
-      #guestExitBtn .lbl { position: relative; }
-
       /* ---------- front door ---------- */
       #homeScreen { position: relative; overflow: hidden; text-align: center; padding: 30px 8px 30px; }
       #homeBubbles { position: absolute; inset: 0; pointer-events: none; }
@@ -473,12 +455,6 @@
     </header>
 
     <main>
-      <div id="guestBanner" class="hidden">
-        <span>Guest play</span>
-        <span class="gb-note">A separate game, safe to hand over. The main game stays untouched.</span>
-        <button id="guestExitBtn" type="button" aria-label="Grown-ups: press and hold to exit guest play"><span class="fill"></span><span class="lbl">Grown-ups: hold to exit</span></button>
-      </div>
-
       <section id="homeScreen">
         <div id="homeBubbles"></div>
         <div class="home-inner">
@@ -492,10 +468,6 @@
             <button id="homeLevelsBtn" class="home-secondary" type="button">
               <span class="t">Levels</span>
               <span class="s">Browse all 500 levels and your stars</span>
-            </button>
-            <button id="homeGuestBtn" class="home-secondary" type="button">
-              <span class="t">Hand-off play</span>
-              <span class="s">A separate guest game, safe to hand to someone else</span>
             </button>
           </div>
         </div>
@@ -623,7 +595,7 @@
       var TOTAL_LEVELS = 500;
       var GROUPS = [
         { name: 'First Pops',    from: 1,  to: 8,   sub: 'Chunky boards, four colors, all flow.' },
-        { name: 'Rainbow Guest', from: 9,  to: 16,  sub: 'A rainbow bubble joins the party at level 9.' },
+        { name: 'Rainbow Arrives', from: 9,  to: 16,  sub: 'A rainbow bubble joins the party at level 9.' },
         { name: 'Bigger Boards', from: 17, to: 24,  sub: 'Wider boards and a sixth color.' },
         { name: 'Pop Party',     from: 25, to: 30,  sub: 'The fullest boards and all seven colors.' },
         { name: 'Boom Bay',      from: 31, to: 40,  sub: 'Boom bubbles join at level 31. Big splashy pops!' },
@@ -1069,16 +1041,10 @@
       function genLevelCached(n) { if (!genCache[n]) genCache[n] = genLevel(n); return genCache[n]; }
 
       /* ================= save ================= */
-      /* Two fully separate profiles. The main profile keeps the original
-         rainbow-pop-v1 keys and format, so existing family saves load as-is.
-         Guest (hand-off) play has its own keys and can never touch main. */
-      var PROFILES = {
-        main:  { key: 'rainbow-pop-v1',       backup: 'rainbow-pop-v1-backup' },
-        guest: { key: 'rainbow-pop-guest-v1', backup: 'rainbow-pop-guest-v1-backup' }
-      };
-      var activeProfile = 'main';
-      var SAVE_KEY = PROFILES.main.key;
-      var SAVE_BACKUP_KEY = PROFILES.main.backup;
+      /* Saves live under the original rainbow-pop-v1 keys and format, so
+         existing family saves load as-is. */
+      var SAVE_KEY = 'rainbow-pop-v1';
+      var SAVE_BACKUP_KEY = 'rainbow-pop-v1-backup';
       function freshSave() { return { sound: true, stars: {}, bestTaps: {}, progress: {}, tutorial: {}, intro: {} }; }
       var save = freshSave();
       function readStored(key) {
@@ -1227,7 +1193,7 @@
       /* ================= dom refs ================= */
       var $ = function (id) { return document.getElementById(id); };
       var topTitle = $('topTitle'), backBtn = $('backBtn'), mapScreen = $('mapScreen'), gameScreen = $('gameScreen');
-      var homeScreen = $('homeScreen'), guestBanner = $('guestBanner');
+      var homeScreen = $('homeScreen');
       var topbarEl = $('topbar'), groupLineEl = $('groupLine'), groupLineTxt = $('groupLineTxt');
 
       /* The themed group a level belongs to, with that group's map colors,
@@ -1790,7 +1756,6 @@
         mapScreen.classList.toggle('hidden', which !== 'map');
         gameScreen.classList.toggle('hidden', which !== 'game');
         backBtn.classList.toggle('hidden', which !== 'game');
-        guestBanner.classList.toggle('hidden', activeProfile !== 'guest');
         if (which === 'home') {
           topTitle.textContent = 'Popeka!';
           topbarEl.style.removeProperty('--tb');
@@ -1857,7 +1822,7 @@
         buildMap();
         showScreen('map');
       }
-      /* ================= front door + hand-off (guest) mode ================= */
+      /* ================= front door ================= */
       var homeBubblesBuilt = false;
       function buildHomeBubbles() {
         if (homeBubblesBuilt) return;
@@ -1899,10 +1864,7 @@
         var lvl = continueLevel();
         $('continueTitle').textContent = hasProgress() ? 'Continue' : 'Start playing';
         $('continueSub').textContent = 'Level ' + lvl + ' · ' + groupFor(lvl).g.name + ' · ★ ' + starTotalCount() + ' of ' + (TOTAL_LEVELS * 3);
-        $('homeGuestBtn').classList.toggle('hidden', activeProfile === 'guest');
-        $('homeTagline').textContent = activeProfile === 'guest'
-          ? 'Guest play: a separate game, safe to hand over.'
-          : 'A relaxing bubble-popping puzzle. Tap a group, watch it pop, breathe out.';
+        $('homeTagline').textContent = 'A relaxing bubble-popping puzzle. Tap a group, watch it pop, breathe out.';
       }
       function resetCur() {
         cur.level = 0; cur.cfg = null; cur.board = []; cur.taps = 0; cur.score = 0;
@@ -1911,31 +1873,6 @@
         $('introOverlay').classList.add('hidden');
         $('winOverlay').classList.add('hidden');
         $('outOverlay').classList.add('hidden');
-      }
-      function setProfile(name) {
-        activeProfile = name;
-        SAVE_KEY = PROFILES[name].key;
-        SAVE_BACKUP_KEY = PROFILES[name].backup;
-      }
-      function flushActive() { if (cur.level) persistProgress(); else persist(); }
-      function enterGuest() {
-        if (activeProfile === 'guest') return;
-        flushActive();
-        resetCur();
-        setProfile('guest');
-        loadSave();
-        updateSoundIcon();
-        showScreen('home');
-      }
-      function exitGuest() {
-        if (activeProfile !== 'guest') return;
-        flushActive();
-        resetCur();
-        setProfile('main');
-        loadSave();
-        updateSoundIcon();
-        cancelGuestHold();
-        showScreen('home');
       }
       function goHome() {
         if (cur.level) persistProgress();
@@ -1948,7 +1885,6 @@
       }
       $('continueBtn').addEventListener('click', function () { startLevel(continueLevel(), false); });
       $('homeLevelsBtn').addEventListener('click', function () { buildMap(); showScreen('map'); });
-      $('homeGuestBtn').addEventListener('click', enterGuest);
 
       /* Logo letters pop when pressed: a burst ring and droplets in the
          letter's own color, the letter vanishes for a beat, then re-inflates
@@ -2027,36 +1963,6 @@
       topTitle.addEventListener('click', function () {
         if (!mapScreen.classList.contains('hidden')) goHome();
       });
-
-      /* Grown-ups exit: press and hold for about 2 seconds. A tap, or
-         releasing early, cancels and guest play continues. */
-      var guestHoldTimer = null, guestHoldStart = 0;
-      function guestHoldTick() {
-        var pct = Math.min(100, ((Date.now() - guestHoldStart) / 2000) * 100);
-        $('guestExitBtn').querySelector('.fill').style.width = pct + '%';
-        if (pct >= 100) { cancelGuestHold(); exitGuest(); }
-      }
-      function startGuestHold(ev) {
-        if (ev) ev.preventDefault();
-        if (guestHoldTimer) return;
-        guestHoldStart = Date.now();
-        guestHoldTimer = setInterval(guestHoldTick, 30);
-        guestHoldTick();
-      }
-      function cancelGuestHold() {
-        if (guestHoldTimer) { clearInterval(guestHoldTimer); guestHoldTimer = null; }
-        var f = $('guestExitBtn').querySelector('.fill');
-        if (f) f.style.width = '0%';
-      }
-      var guestExitBtn = $('guestExitBtn');
-      guestExitBtn.addEventListener('pointerdown', startGuestHold);
-      guestExitBtn.addEventListener('pointerup', cancelGuestHold);
-      guestExitBtn.addEventListener('pointerleave', cancelGuestHold);
-      guestExitBtn.addEventListener('pointercancel', cancelGuestHold);
-      guestExitBtn.addEventListener('contextmenu', function (ev) { ev.preventDefault(); });
-      guestExitBtn.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') startGuestHold(ev); });
-      guestExitBtn.addEventListener('keyup', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') cancelGuestHold(); });
-      guestExitBtn.addEventListener('click', function (ev) { ev.preventDefault(); });
 
       function buildMap() {
         var total = 0;
@@ -2163,9 +2069,6 @@
         startLevel: startLevel,
         goMap: goMap,
         goHome: goHome,
-        enterGuest: enterGuest,
-        exitGuest: exitGuest,
-        profile: function () { return activeProfile; },
         boardString: boardString,
         isUnlocked: isUnlocked,
         resolvePop: resolvePop,
@@ -2173,7 +2076,6 @@
           return { level: cur.level, taps: cur.taps, score: cur.score, par: cur.par, budget: cur.budget,
                    tapsLeft: Math.max(0, cur.budget - cur.taps), totalCells: cur.totalCells,
                    cells: countCells(), finished: finished,
-                   profile: activeProfile,
                    sound: save.sound, tutorial: JSON.parse(JSON.stringify(save.tutorial)),
                    intro: JSON.parse(JSON.stringify(save.intro)), pendingIntro: pendingIntro,
                    introVisible: !$('introOverlay').classList.contains('hidden'),
