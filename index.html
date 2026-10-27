@@ -1348,7 +1348,7 @@
          existing family saves load as-is. */
       var SAVE_KEY = 'rainbow-pop-v1';
       var SAVE_BACKUP_KEY = 'rainbow-pop-v1-backup';
-      function freshSave() { return { sound: true, sfxVol: 1, musicVol: 1, haptics: true, stars: {}, bestTaps: {}, progress: {}, tutorial: {}, intro: {} }; }
+      function freshSave() { return { sound: true, sfxVol: 1, musicVol: 1, audioPanelV: 2, haptics: true, stars: {}, bestTaps: {}, progress: {}, tutorial: {}, intro: {} }; }
       function volumeOr(v, fallback) {
         var n = typeof v === 'number' ? v : parseFloat(v);
         return isFinite(n) ? Math.max(0, Math.min(1, n)) : fallback;
@@ -1367,16 +1367,29 @@
         save = freshSave();
         var p = readStored(SAVE_KEY) || readStored(SAVE_BACKUP_KEY);
         if (p) {
-          var legacySound = p.sound !== false;
-          save.sfxVol = volumeOr(p.sfxVol, legacySound ? 1 : 0);
-          save.musicVol = volumeOr(p.musicVol, legacySound ? 1 : 0);
+          /* Panel volumes default ON at full volume until the player
+             changes them; the legacy sound flag no longer feeds defaults. */
+          save.sfxVol = volumeOr(p.sfxVol, 1);
+          save.musicVol = volumeOr(p.musicVol, 1);
           save.haptics = typeof p.haptics === 'boolean' ? p.haptics : true;
-          syncLegacySound();
+          save.audioPanelV = typeof p.audioPanelV === 'number' ? p.audioPanelV : 0;
           save.stars = p.stars || {};
           save.bestTaps = p.bestTaps || {};
           save.progress = p.progress || {};
           save.tutorial = p.tutorial || {};
           save.intro = p.intro || {};
+          if (save.audioPanelV !== 2) {
+            /* One-time repair: the first panel build migrated a legacy
+               muted flag into both sliders at 0. Reset both to full
+               exactly once, then stored values are honored as-is. */
+            save.sfxVol = 1;
+            save.musicVol = 1;
+            save.audioPanelV = 2;
+            syncLegacySound();
+            persist();
+          } else {
+            syncLegacySound();
+          }
         }
       }
       function mergeStored(p) {
