@@ -4,7 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="light dark" />
-    <link rel="icon" href="data:," />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><radialGradient id='g' cx='35%25' cy='30%25'><stop offset='0%25' stop-color='%23FFD3EC'/><stop offset='55%25' stop-color='%23F15BB5'/><stop offset='100%25' stop-color='%239B5DE5'/></radialGradient></defs><circle cx='32' cy='32' r='28' fill='url(%23g)'/><ellipse cx='23' cy='21' rx='9' ry='6' fill='white' opacity='.55'/><text x='32' y='43' font-size='26' text-anchor='middle' fill='white'>★</text></svg>" />
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><radialGradient id='g' cx='35%25' cy='30%25'><stop offset='0%25' stop-color='%23FFD3EC'/><stop offset='55%25' stop-color='%23F15BB5'/><stop offset='100%25' stop-color='%239B5DE5'/></radialGradient></defs><circle cx='32' cy='32' r='28' fill='url(%23g)'/><ellipse cx='23' cy='21' rx='9' ry='6' fill='white' opacity='.55'/><text x='32' y='43' font-size='26' text-anchor='middle' fill='white'>★</text></svg>" />
+    <meta name="apple-mobile-web-app-title" content="Poptastic!" />
     <title>Poptastic!</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -351,9 +353,67 @@
         footer { text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); }
       }
       @media (prefers-reduced-motion: reduce) {
-        .bubble, .face.burst, .float-txt, .face.tut, #arrowHint, .face.rainbow, .win-stars .on { animation-duration: 0.01s !important; }
+        .bubble, .face.burst, .float-txt, .face.tut, #arrowHint, .face.rainbow, .win-stars .on, .home-bub { animation-duration: 0.01s !important; }
         .bubble { transition-duration: 0.01s; }
       }
+
+      /* ---------- guest banner ---------- */
+      #guestBanner {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        background: #2E2447; color: #FFF8EE; border-radius: 14px;
+        padding: 8px 12px; margin-bottom: 12px; font-weight: 800; font-size: 14px;
+      }
+      #guestBanner .gb-note { flex: 1; opacity: 0.85; font-weight: 700; font-size: 12.5px; }
+      #guestExitBtn {
+        position: relative; overflow: hidden; border: 2px solid #FFF8EE; background: transparent;
+        color: #FFF8EE; border-radius: 999px; padding: 7px 14px; font-family: inherit;
+        font-weight: 800; font-size: 13px; cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none;
+      }
+      #guestExitBtn .fill {
+        position: absolute; left: 0; top: 0; bottom: 0; width: 0%;
+        background: rgba(255, 255, 255, 0.38); pointer-events: none;
+      }
+      #guestExitBtn .lbl { position: relative; }
+
+      /* ---------- front door ---------- */
+      #homeScreen { position: relative; overflow: hidden; text-align: center; padding: 30px 8px 30px; }
+      #homeBubbles { position: absolute; inset: 0; pointer-events: none; }
+      .home-bub {
+        position: absolute; bottom: -80px; border-radius: 50%;
+        box-shadow: inset -4px -6px 10px rgba(0,0,0,0.12), inset 4px 6px 9px rgba(255,255,255,0.55);
+        animation-name: homeFloat; animation-timing-function: ease-in-out; animation-iteration-count: infinite; animation-direction: alternate;
+      }
+      @keyframes homeFloat {
+        from { transform: translate(0, 0); }
+        to { transform: translate(16px, -52vh); }
+      }
+      .home-inner { position: relative; }
+      .home-logo {
+        font-family: "Baloo 2", "Nunito", sans-serif; font-weight: 800; font-size: 58px; line-height: 1.05;
+        letter-spacing: 0.5px; margin: 8px 0 4px;
+        background: linear-gradient(92deg, #FF5D8F, #FF9F2E 22%, #DFA400 40%, #17B978 58%, #26A6C6 74%, #4A7DFF 88%, #9B5DE5);
+        -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+        filter: drop-shadow(0 2px 0 rgba(255,255,255,0.65));
+      }
+      .home-tag { color: var(--ink); font-weight: 800; font-size: 16.5px; margin: 2px auto 4px; max-width: 420px; text-shadow: 0 1px 0 rgba(255,255,255,0.45); }
+      .home-actions { display: flex; flex-direction: column; gap: 12px; max-width: 350px; margin: 24px auto 0; }
+      .home-primary {
+        border: none; border-radius: 20px; padding: 16px 18px 14px; cursor: pointer; font-family: inherit;
+        background: var(--btn-bg); color: var(--btn-ink); box-shadow: 0 5px 0 rgba(46,36,71,0.35), var(--shadow);
+        display: flex; flex-direction: column; align-items: center; gap: 2px;
+      }
+      .home-primary:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(46,36,71,0.35), var(--shadow); }
+      .home-primary .t { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 23px; }
+      .home-primary .s { font-size: 14px; font-weight: 800; opacity: 0.82; }
+      .home-secondary {
+        border: 2px solid var(--line); border-radius: 18px; padding: 13px 16px; cursor: pointer; font-family: inherit;
+        background: var(--card); color: var(--ink); box-shadow: 0 4px 0 var(--line);
+        display: flex; flex-direction: column; align-items: center; gap: 1px;
+      }
+      .home-secondary:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--line); }
+      .home-secondary .t { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 19px; }
+      .home-secondary .s { font-size: 13px; font-weight: 700; color: var(--muted); }
+      .map-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
     </style>
   </head>
   <body>
@@ -373,8 +433,36 @@
     </header>
 
     <main>
-      <section id="mapScreen">
-        <div><span id="starTotal"><span class="st">★</span><span id="starTotalTxt">0 of 1500 stars</span></span></div>
+      <div id="guestBanner" class="hidden">
+        <span>Guest play</span>
+        <span class="gb-note">A separate game, safe to hand over. The main game stays untouched.</span>
+        <button id="guestExitBtn" type="button" aria-label="Grown-ups: press and hold to exit guest play"><span class="fill"></span><span class="lbl">Grown-ups: hold to exit</span></button>
+      </div>
+
+      <section id="homeScreen">
+        <div id="homeBubbles"></div>
+        <div class="home-inner">
+          <div class="home-logo">Poptastic!</div>
+          <p class="home-tag" id="homeTagline">A relaxing bubble-popping puzzle. Tap a group, watch it pop, breathe out.</p>
+          <div class="home-actions">
+            <button id="continueBtn" class="home-primary" type="button">
+              <span class="t" id="continueTitle">Start playing</span>
+              <span class="s" id="continueSub">Level 1 · First Pops · ★ 0 of 1500</span>
+            </button>
+            <button id="homeLevelsBtn" class="home-secondary" type="button">
+              <span class="t">Levels</span>
+              <span class="s">Browse all 500 levels and your stars</span>
+            </button>
+            <button id="homeGuestBtn" class="home-secondary" type="button">
+              <span class="t">Hand-off play</span>
+              <span class="s">A separate guest game, safe to hand to someone else</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="mapScreen" class="hidden">
+        <div class="map-top"><span id="starTotal"><span class="st">★</span><span id="starTotalTxt">0 of 1500 stars</span></span><button id="mapHomeBtn" class="ctl-btn" type="button">Home</button></div>
         <div id="mapGroups"></div>
       </section>
 
@@ -941,9 +1029,18 @@
       function genLevelCached(n) { if (!genCache[n]) genCache[n] = genLevel(n); return genCache[n]; }
 
       /* ================= save ================= */
-      var SAVE_KEY = 'rainbow-pop-v1';
-      var SAVE_BACKUP_KEY = 'rainbow-pop-v1-backup';
-      var save = { sound: true, stars: {}, bestTaps: {}, progress: {}, tutorial: {}, intro: {} };
+      /* Two fully separate profiles. The main profile keeps the original
+         rainbow-pop-v1 keys and format, so existing family saves load as-is.
+         Guest (hand-off) play has its own keys and can never touch main. */
+      var PROFILES = {
+        main:  { key: 'rainbow-pop-v1',       backup: 'rainbow-pop-v1-backup' },
+        guest: { key: 'rainbow-pop-guest-v1', backup: 'rainbow-pop-guest-v1-backup' }
+      };
+      var activeProfile = 'main';
+      var SAVE_KEY = PROFILES.main.key;
+      var SAVE_BACKUP_KEY = PROFILES.main.backup;
+      function freshSave() { return { sound: true, stars: {}, bestTaps: {}, progress: {}, tutorial: {}, intro: {} }; }
+      var save = freshSave();
       function readStored(key) {
         try {
           var raw = localStorage.getItem(key);
@@ -953,6 +1050,7 @@
         } catch (e) { return null; }
       }
       function loadSave() {
+        save = freshSave();
         var p = readStored(SAVE_KEY) || readStored(SAVE_BACKUP_KEY);
         if (p) {
           save.sound = p.sound !== false;
@@ -1089,6 +1187,7 @@
       /* ================= dom refs ================= */
       var $ = function (id) { return document.getElementById(id); };
       var topTitle = $('topTitle'), backBtn = $('backBtn'), mapScreen = $('mapScreen'), gameScreen = $('gameScreen');
+      var homeScreen = $('homeScreen'), guestBanner = $('guestBanner');
       var topbarEl = $('topbar'), groupLineEl = $('groupLine'), groupLineTxt = $('groupLineTxt');
 
       /* The themed group a level belongs to, with that group's map colors,
@@ -1647,10 +1746,16 @@
 
       /* ================= level / screen flow ================= */
       function showScreen(which) {
+        homeScreen.classList.toggle('hidden', which !== 'home');
         mapScreen.classList.toggle('hidden', which !== 'map');
         gameScreen.classList.toggle('hidden', which !== 'game');
         backBtn.classList.toggle('hidden', which !== 'game');
-        if (which === 'map') {
+        guestBanner.classList.toggle('hidden', activeProfile !== 'guest');
+        if (which === 'home') {
+          topTitle.textContent = 'Poptastic!';
+          topbarEl.style.removeProperty('--tb');
+          buildHome();
+        } else if (which === 'map') {
           topTitle.textContent = 'Choose a level';
           topbarEl.style.removeProperty('--tb');
         } else {
@@ -1712,6 +1817,133 @@
         buildMap();
         showScreen('map');
       }
+      /* ================= front door + hand-off (guest) mode ================= */
+      var homeBubblesBuilt = false;
+      function buildHomeBubbles() {
+        if (homeBubblesBuilt) return;
+        homeBubblesBuilt = true;
+        var html = '';
+        for (var i = 0; i < 14; i++) {
+          var p = PALETTE[i % PALETTE.length];
+          var sz = 18 + ((i * 37) % 54);
+          var left = (i * 71) % 94;
+          var dur = 7 + ((i * 13) % 8);
+          var delay = -((i * 17) % 12);
+          html += '<span class="home-bub" style="left:' + left + '%;width:' + sz + 'px;height:' + sz +
+                  'px;background:' + hexA(p.hex, 0.45) + ';animation-duration:' + dur + 's;animation-delay:' + delay + 's"></span>';
+        }
+        $('homeBubbles').innerHTML = html;
+      }
+      function starTotalCount() {
+        var t = 0;
+        Object.keys(save.stars).forEach(function (k) { t += save.stars[k]; });
+        return t;
+      }
+      function frontierLevel() {
+        var f = 1;
+        Object.keys(save.stars).forEach(function (k) { var n = parseInt(k, 10); if (n >= f) f = n + 1; });
+        return Math.min(f, TOTAL_LEVELS);
+      }
+      function continueLevel() {
+        var f = frontierLevel();
+        if (save.progress[f]) return f;
+        var ks = Object.keys(save.progress);
+        if (ks.length) return Math.max.apply(null, ks.map(function (k) { return parseInt(k, 10); }));
+        return f;
+      }
+      function hasProgress() {
+        return Object.keys(save.stars).length > 0 || Object.keys(save.progress).length > 0;
+      }
+      function buildHome() {
+        buildHomeBubbles();
+        var lvl = continueLevel();
+        $('continueTitle').textContent = hasProgress() ? 'Continue' : 'Start playing';
+        $('continueSub').textContent = 'Level ' + lvl + ' · ' + groupFor(lvl).g.name + ' · ★ ' + starTotalCount() + ' of ' + (TOTAL_LEVELS * 3);
+        $('homeGuestBtn').classList.toggle('hidden', activeProfile === 'guest');
+        $('homeTagline').textContent = activeProfile === 'guest'
+          ? 'Guest play: a separate game, safe to hand over.'
+          : 'A relaxing bubble-popping puzzle. Tap a group, watch it pop, breathe out.';
+      }
+      function resetCur() {
+        cur.level = 0; cur.cfg = null; cur.board = []; cur.taps = 0; cur.score = 0;
+        undoStack = []; finished = false; animating = false;
+        hidePrompt(); pendingIntro = null;
+        $('introOverlay').classList.add('hidden');
+        $('winOverlay').classList.add('hidden');
+        $('outOverlay').classList.add('hidden');
+      }
+      function setProfile(name) {
+        activeProfile = name;
+        SAVE_KEY = PROFILES[name].key;
+        SAVE_BACKUP_KEY = PROFILES[name].backup;
+      }
+      function flushActive() { if (cur.level) persistProgress(); else persist(); }
+      function enterGuest() {
+        if (activeProfile === 'guest') return;
+        flushActive();
+        resetCur();
+        setProfile('guest');
+        loadSave();
+        updateSoundIcon();
+        showScreen('home');
+      }
+      function exitGuest() {
+        if (activeProfile !== 'guest') return;
+        flushActive();
+        resetCur();
+        setProfile('main');
+        loadSave();
+        updateSoundIcon();
+        cancelGuestHold();
+        showScreen('home');
+      }
+      function goHome() {
+        if (cur.level) persistProgress();
+        hidePrompt();
+        pendingIntro = null;
+        $('introOverlay').classList.add('hidden');
+        $('winOverlay').classList.add('hidden');
+        $('outOverlay').classList.add('hidden');
+        showScreen('home');
+      }
+      $('continueBtn').addEventListener('click', function () { startLevel(continueLevel(), false); });
+      $('homeLevelsBtn').addEventListener('click', function () { buildMap(); showScreen('map'); });
+      $('homeGuestBtn').addEventListener('click', enterGuest);
+      $('mapHomeBtn').addEventListener('click', goHome);
+      topTitle.addEventListener('click', function () {
+        if (!mapScreen.classList.contains('hidden')) goHome();
+      });
+
+      /* Grown-ups exit: press and hold for about 2 seconds. A tap, or
+         releasing early, cancels and guest play continues. */
+      var guestHoldTimer = null, guestHoldStart = 0;
+      function guestHoldTick() {
+        var pct = Math.min(100, ((Date.now() - guestHoldStart) / 2000) * 100);
+        $('guestExitBtn').querySelector('.fill').style.width = pct + '%';
+        if (pct >= 100) { cancelGuestHold(); exitGuest(); }
+      }
+      function startGuestHold(ev) {
+        if (ev) ev.preventDefault();
+        if (guestHoldTimer) return;
+        guestHoldStart = Date.now();
+        guestHoldTimer = setInterval(guestHoldTick, 30);
+        guestHoldTick();
+      }
+      function cancelGuestHold() {
+        if (guestHoldTimer) { clearInterval(guestHoldTimer); guestHoldTimer = null; }
+        var f = $('guestExitBtn').querySelector('.fill');
+        if (f) f.style.width = '0%';
+      }
+      var guestExitBtn = $('guestExitBtn');
+      guestExitBtn.addEventListener('pointerdown', startGuestHold);
+      guestExitBtn.addEventListener('pointerup', cancelGuestHold);
+      guestExitBtn.addEventListener('pointerleave', cancelGuestHold);
+      guestExitBtn.addEventListener('pointercancel', cancelGuestHold);
+      guestExitBtn.addEventListener('contextmenu', function (ev) { ev.preventDefault(); });
+      guestExitBtn.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') startGuestHold(ev); });
+      guestExitBtn.addEventListener('keyup', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') cancelGuestHold(); });
+      guestExitBtn.addEventListener('click', function (ev) { ev.preventDefault(); });
+
       function buildMap() {
         var total = 0;
         Object.keys(save.stars).forEach(function (k) { total += save.stars[k]; });
@@ -1816,6 +2048,10 @@
         starsFor: starsFor,
         startLevel: startLevel,
         goMap: goMap,
+        goHome: goHome,
+        enterGuest: enterGuest,
+        exitGuest: exitGuest,
+        profile: function () { return activeProfile; },
         boardString: boardString,
         isUnlocked: isUnlocked,
         resolvePop: resolvePop,
@@ -1823,6 +2059,7 @@
           return { level: cur.level, taps: cur.taps, score: cur.score, par: cur.par, budget: cur.budget,
                    tapsLeft: Math.max(0, cur.budget - cur.taps), totalCells: cur.totalCells,
                    cells: countCells(), finished: finished,
+                   profile: activeProfile,
                    sound: save.sound, tutorial: JSON.parse(JSON.stringify(save.tutorial)),
                    intro: JSON.parse(JSON.stringify(save.intro)), pendingIntro: pendingIntro,
                    introVisible: !$('introOverlay').classList.contains('hidden'),
@@ -1833,7 +2070,7 @@
           if (cur.board[c] && cur.board[c][r]) onBubbleTap(cur.board[c][r].id);
         },
         undo: function () { $('undoBtn').click(); },
-        clearSave: function () { try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem(SAVE_BACKUP_KEY); } catch (e) {} save = { sound: true, stars: {}, bestTaps: {}, progress: {}, tutorial: {}, intro: {} }; },
+        clearSave: function () { try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem(SAVE_BACKUP_KEY); } catch (e) {} save = freshSave(); },
         verifyAll: function () {
           var out = [];
           for (var n = 1; n <= TOTAL_LEVELS; n++) {
@@ -1856,8 +2093,8 @@
       });
       loadSave();
       updateSoundIcon();
-      buildMap();
-      showScreen('map');
+      buildHome();
+      showScreen('home');
     </script>
   </body>
 </html>

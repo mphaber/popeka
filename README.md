@@ -8,6 +8,7 @@ A bright, brain-off bubble-popping game for kids and adults. Tap any connected g
 - A generous tap budget per level; run out and you simply try again
 - Stars for beating par, never required for progress
 - Forgiving throughout: unlimited undo, free restart, resume where you left off
+- A front door with Continue, and a separate hand-off (guest) game with its own progress that is safe to hand to someone else: leaving guest play takes a grown-up press-and-hold, and the main game is never touched
 - No timers, no lives, no ads, no purchases
 
 Play: https://mphaber.github.io/poptastic/
