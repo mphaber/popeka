@@ -130,6 +130,94 @@
       #backBtn { width: auto; min-width: 92px; padding: 0 16px 0 12px; gap: 4px; font-size: 16px; border-radius: 999px; }
       #backBtn svg { width: 18px; height: 18px; }
 
+      /* ---------- audio settings panel ---------- */
+      .audio-panel {
+        position: absolute; top: calc(100% - 3px); right: 14px;
+        width: min(326px, calc(100vw - 28px)); pointer-events: auto;
+        overflow: hidden; color: var(--ink); border: 3px solid var(--cream); border-radius: 24px;
+        background:
+          radial-gradient(ellipse 90% 40% at 50% -6%, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0) 55%),
+          linear-gradient(168deg, #FFFFFF 0%, #FFF8EE 58%, #FFEFD8 100%);
+        box-shadow: var(--panel-shadow), inset 0 2px 0 rgba(255,255,255,0.8);
+        padding: 16px 16px 10px;
+      }
+      .audio-panel::before {
+        content: ""; position: absolute; top: 0; left: 0; right: 0; height: 8px;
+        background: linear-gradient(90deg, #FF5252, #FF9F2E, #FFCF3F, #3ECF6E, #26C6DA, #4A7DFF, #9B5DE5, #F15BB5);
+      }
+      @media (prefers-color-scheme: dark) {
+        .audio-panel { background: radial-gradient(ellipse 90% 40% at 50% -6%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 55%), linear-gradient(168deg, #2A2B4E 0%, #23243F 62%, #1D1E33 100%); }
+      }
+      .audio-row {
+        min-height: 56px; display: grid; grid-template-columns: 40px 76px minmax(0, 1fr);
+        align-items: center; gap: 10px; padding: 5px 0;
+      }
+      .audio-row + .audio-row { border-top: 2px solid rgba(222, 199, 155, 0.55); }
+      .audio-ico {
+        width: 40px; height: 40px; border-radius: 50%; flex: none;
+        display: inline-flex; align-items: center; justify-content: center; color: var(--cream);
+        border: 2.5px solid var(--cream);
+        background:
+          radial-gradient(ellipse 84% 58% at 50% -12%, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0) 58%),
+          linear-gradient(135deg, var(--g1), var(--g2));
+        box-shadow: 0 3px 0 var(--edge), inset 0 2px 0 rgba(255,255,255,0.62), inset 0 -4px 8px rgba(46,36,71,0.14);
+      }
+      .audio-ico svg { width: 22px; height: 22px; fill: currentColor; }
+      .audio-row.sounds { --g1: #F15BB5; --g2: #FF7A59; --edge: #C2255C; }
+      .audio-row.music { --g1: #26C6DA; --g2: #4A7DFF; --edge: #2456C4; }
+      .audio-row.haptics { --g1: #3ECF6E; --g2: #17B978; --edge: #0E7C4F; }
+      .audio-label { font-family: "Fredoka", sans-serif; font-weight: 600; font-size: 16px; line-height: 1.1; }
+      .audio-slider {
+        --fill: 100%; -webkit-appearance: none; appearance: none;
+        width: 100%; min-width: 0; height: 44px; margin: 0; padding: 0;
+        background: transparent; cursor: pointer;
+      }
+      .audio-slider:focus-visible, .haptic-switch:focus-visible { outline: 3px solid #4A7DFF; outline-offset: 3px; }
+      .audio-slider::-webkit-slider-runnable-track {
+        height: 12px; border-radius: 999px; border: 2px solid var(--cream);
+        background: linear-gradient(90deg, var(--g1) 0%, var(--g2) var(--fill), rgba(126, 113, 148, 0.28) var(--fill), rgba(126, 113, 148, 0.28) 100%);
+        box-shadow: 0 2px 0 var(--edge), inset 0 1px 3px rgba(46,36,71,0.16);
+      }
+      .audio-slider::-webkit-slider-thumb {
+        -webkit-appearance: none; appearance: none;
+        width: 28px; height: 28px; margin-top: -10px; border-radius: 50%;
+        border: 3px solid var(--cream);
+        background:
+          radial-gradient(circle at 34% 28%, rgba(255,255,255,0.95) 0 18%, rgba(255,255,255,0) 42%),
+          linear-gradient(135deg, var(--g1), var(--g2));
+        box-shadow: 0 3px 0 var(--edge), 0 6px 12px rgba(46,36,71,0.20);
+      }
+      .audio-slider::-moz-range-track {
+        height: 12px; border-radius: 999px; border: 2px solid var(--cream);
+        background: rgba(126, 113, 148, 0.28); box-shadow: 0 2px 0 var(--edge);
+      }
+      .audio-slider::-moz-range-progress { height: 12px; border-radius: 999px; background: linear-gradient(90deg, var(--g1), var(--g2)); }
+      .audio-slider::-moz-range-thumb {
+        width: 22px; height: 22px; border-radius: 50%; border: 3px solid var(--cream);
+        background: linear-gradient(135deg, var(--g1), var(--g2));
+        box-shadow: 0 3px 0 var(--edge), 0 6px 12px rgba(46,36,71,0.20);
+      }
+      .haptic-switch {
+        justify-self: end; width: 66px; height: 40px; border-radius: 999px; padding: 4px;
+        border: 3px solid var(--cream); cursor: pointer; position: relative;
+        background: linear-gradient(135deg, #B8B2C9, #8F89A8);
+        box-shadow: 0 3px 0 #6F6890, inset 0 2px 0 rgba(255,255,255,0.55), inset 0 -4px 8px rgba(46,36,71,0.16);
+        transition: background 0.18s ease, box-shadow 0.18s ease;
+      }
+      .haptic-switch span {
+        display: block; width: 26px; height: 26px; border-radius: 50%;
+        background: radial-gradient(circle at 34% 28%, rgba(255,255,255,0.96) 0 18%, rgba(255,255,255,0) 46%), #FFF8EE;
+        box-shadow: 0 2px 5px rgba(46,36,71,0.28);
+        transform: translateX(0); transition: transform 0.18s cubic-bezier(.34,1.8,.64,1);
+      }
+      .haptic-switch.on {
+        background: linear-gradient(135deg, #3ECF6E, #17B978);
+        box-shadow: 0 3px 0 #0E7C4F, inset 0 2px 0 rgba(255,255,255,0.55), inset 0 -4px 8px rgba(0,70,35,0.16);
+      }
+      .haptic-switch.on span { transform: translateX(26px); }
+      .haptic-switch:active span { transform: translateX(0) scale(0.92); }
+      .haptic-switch.on:active span { transform: translateX(26px) scale(0.92); }
+
       main { flex: 1; width: 100%; max-width: 640px; margin: 0 auto; padding: 10px 14px 8px; }
       #mapScreen, #gameScreen { padding-top: calc(68px + env(safe-area-inset-top, 0px)); }
 
@@ -648,10 +736,27 @@
       <div id="topTitle">Choose a level</div>
       <div class="top-actions">
         <button id="helpBtn" class="icon-btn" aria-label="How to play">?</button>
-        <button id="soundBtn" class="icon-btn" aria-label="Toggle sound">
+        <button id="soundBtn" class="icon-btn" aria-label="Sound settings" aria-haspopup="true" aria-expanded="false" aria-controls="audioPanel">
           <svg id="soundOnIco" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>
           <svg id="soundOffIco" class="hidden" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm14.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4-2.7-2.7z"/></svg>
         </button>
+      </div>
+      <div id="audioPanel" class="audio-panel hidden" role="dialog" aria-label="Sound settings">
+        <div class="audio-row sounds">
+          <span class="audio-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg></span>
+          <label class="audio-label" for="sfxVolSlider">Sounds</label>
+          <input id="sfxVolSlider" class="audio-slider" type="range" min="0" max="100" step="1" value="100" aria-label="Sounds volume" />
+        </div>
+        <div class="audio-row music">
+          <span class="audio-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></span>
+          <label class="audio-label" for="musicVolSlider">Music</label>
+          <input id="musicVolSlider" class="audio-slider" type="range" min="0" max="100" step="1" value="100" aria-label="Music volume" />
+        </div>
+        <div class="audio-row haptics">
+          <span class="audio-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="10" y="3" width="4" height="18" rx="1.6"/><path d="M5.5 8v8M18.5 8v8M2.5 10v4M21.5 10v4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <span class="audio-label" id="hapticsLabel">Haptics</span>
+          <button id="hapticsToggle" class="haptic-switch on" type="button" role="switch" aria-checked="true" aria-labelledby="hapticsLabel"><span aria-hidden="true"></span></button>
+        </div>
       </div>
     </header>
 
@@ -1243,7 +1348,12 @@
          existing family saves load as-is. */
       var SAVE_KEY = 'rainbow-pop-v1';
       var SAVE_BACKUP_KEY = 'rainbow-pop-v1-backup';
-      function freshSave() { return { sound: true, stars: {}, bestTaps: {}, progress: {}, tutorial: {}, intro: {} }; }
+      function freshSave() { return { sound: true, sfxVol: 1, musicVol: 1, haptics: true, stars: {}, bestTaps: {}, progress: {}, tutorial: {}, intro: {} }; }
+      function volumeOr(v, fallback) {
+        var n = typeof v === 'number' ? v : parseFloat(v);
+        return isFinite(n) ? Math.max(0, Math.min(1, n)) : fallback;
+      }
+      function syncLegacySound() { save.sound = save.sfxVol > 0 || save.musicVol > 0; }
       var save = freshSave();
       function readStored(key) {
         try {
@@ -1257,7 +1367,11 @@
         save = freshSave();
         var p = readStored(SAVE_KEY) || readStored(SAVE_BACKUP_KEY);
         if (p) {
-          save.sound = p.sound !== false;
+          var legacySound = p.sound !== false;
+          save.sfxVol = volumeOr(p.sfxVol, legacySound ? 1 : 0);
+          save.musicVol = volumeOr(p.musicVol, legacySound ? 1 : 0);
+          save.haptics = typeof p.haptics === 'boolean' ? p.haptics : true;
+          syncLegacySound();
           save.stars = p.stars || {};
           save.bestTaps = p.bestTaps || {};
           save.progress = p.progress || {};
@@ -1295,13 +1409,18 @@
       }
 
       /* ================= audio ================= */
-      var AC = null, master = null;
+      var AC = null, master = null, sfxBus = null, musicBus = null;
+      function anyAudioOn() { return save.sfxVol > 0 || save.musicVol > 0; }
+      function applyAudioVolumes() {
+        if (sfxBus) sfxBus.gain.value = save.sfxVol;
+        if (musicBus) musicBus.gain.value = save.musicVol;
+      }
       function setSession() {
         try { if ('audioSession' in navigator) navigator.audioSession.type = 'ambient'; } catch (e) { /* guarded */ }
       }
       function ensureAudio() {
         setSession();
-        if (!save.sound) return false;
+        if (!anyAudioOn()) return false;
         if (!AC) {
           var Ctx = window.AudioContext || window.webkitAudioContext;
           if (!Ctx) return false;
@@ -1318,6 +1437,12 @@
           master.gain.value = 1.0;
           master.connect(comp);
           comp.connect(AC.destination);
+          sfxBus = AC.createGain();
+          sfxBus.gain.value = save.sfxVol;
+          sfxBus.connect(master);
+          musicBus = AC.createGain();
+          musicBus.gain.value = save.musicVol;
+          musicBus.connect(master);
         }
         if (AC.state !== 'running') {
           try {
@@ -1329,7 +1454,7 @@
         return true;
       }
       function tone(freq, opts) {
-        if (!AC || !save.sound) return;
+        if (!AC || save.sfxVol <= 0) return;
         opts = opts || {};
         var t0 = AC.currentTime + (opts.delay || 0);
         var osc = AC.createOscillator(), g = AC.createGain();
@@ -1340,7 +1465,7 @@
         g.gain.setValueAtTime(0.0001, t0);
         g.gain.exponentialRampToValueAtTime(vol, t0 + 0.012);
         g.gain.exponentialRampToValueAtTime(0.0001, t0 + (opts.dur || 0.25));
-        osc.connect(g); g.connect(master);
+        osc.connect(g); g.connect(sfxBus || master);
         osc.start(t0); osc.stop(t0 + (opts.dur || 0.25) + 0.05);
       }
       /* ================= haptics =================
@@ -1351,7 +1476,7 @@
       var motionQuery = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
       function reducedMotion() { return !!(motionQuery && motionQuery.matches); }
       function buzz(pattern) {
-        if (reducedMotion()) return;
+        if (!save.haptics || reducedMotion()) return;
         try { if (navigator && typeof navigator.vibrate === 'function') navigator.vibrate(pattern); } catch (e) { /* ignore */ }
       }
       function popBuzz(size, step) {
@@ -1406,6 +1531,7 @@
         return popNoiseBuf;
       }
       function popSnap(vol) {
+        if (!AC || save.sfxVol <= 0) return;
         var t0 = AC.currentTime;
         var src = AC.createBufferSource();
         src.buffer = getPopNoiseBuf();
@@ -1415,7 +1541,7 @@
         var g = AC.createGain();
         g.gain.setValueAtTime(vol, t0);
         g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.028);
-        src.connect(hp); hp.connect(lp); lp.connect(g); g.connect(master);
+        src.connect(hp); hp.connect(lp); lp.connect(g); g.connect(sfxBus || master);
         src.start(t0, Math.random() * 0.15);
         src.stop(t0 + 0.05);
       }
@@ -1428,7 +1554,7 @@
           osc.frequency.value = freq * h[0];
           g.gain.setValueAtTime(vol * h[1], t0);
           g.gain.setTargetAtTime(0, t0, 1 / h[2]);
-          osc.connect(g); g.connect(master);
+          osc.connect(g); g.connect(sfxBus || master);
           osc.start(t0); osc.stop(t0 + h[3] + 0.75);
         });
         /* faint echo repeat, like a bubble bouncing */
@@ -1436,7 +1562,7 @@
         eo.type = 'sine'; eo.frequency.value = freq;
         eg.gain.setValueAtTime(vol * 0.10, t0 + 0.11);
         eg.gain.setTargetAtTime(0, t0 + 0.11, 1 / 9);
-        eo.connect(eg); eg.connect(master);
+        eo.connect(eg); eg.connect(sfxBus || master);
         eo.start(t0 + 0.11); eo.stop(t0 + 0.11 + 0.9);
       }
       function popFamily() {
@@ -1449,7 +1575,7 @@
         return fam.root * 4 * Math.pow(2, semi / 12);
       }
       function popNotes(colorIdx, size, volScale, step) {
-        if (!ensureAudio()) return;
+        if (save.sfxVol <= 0 || !ensureAudio()) return;
         var vs = volScale || 1;
         popSnap(0.34 * vs);
         logPop('snap', 0, 0);
@@ -1479,7 +1605,7 @@
       function playPop(colorIdx, size) {
         var step = bumpPopChain();
         popNotes(colorIdx, size, 1, step);
-        if (save.sound) popBuzz(size, step);
+        popBuzz(size, step);
         return step;
       }
       function playWiggle() { if (ensureAudio()) tone(120, { slideTo: 85, dur: 0.09, type: 'sine', vol: 0.10 }); }
@@ -1716,9 +1842,9 @@
          save.sound toggle as the pops. */
       var musicEngine = null, musicWanted = false;
       function ensureMusic() {
-        if (!AC || !master) return null;
+        if (!AC || !musicBus) return null;
         if (!musicEngine) {
-          try { musicEngine = createMusicEngine(AC, master, { live: true, seed: (Date.now() % 90000) + 11 }); }
+          try { musicEngine = createMusicEngine(AC, musicBus, { live: true, seed: (Date.now() % 90000) + 11 }); }
           catch (e) { musicEngine = null; }
         }
         return musicEngine;
@@ -1728,7 +1854,7 @@
         return musicFamilyForLevel(continueLevel());
       }
       function musicSync() {
-        if (!save.sound) { if (musicEngine) musicEngine.stop(); return; }
+        if (save.musicVol <= 0) { if (musicEngine) musicEngine.stop(); return; }
         if (!musicWanted) return;
         if (!ensureAudio()) return;
         var e = ensureMusic();
@@ -2679,17 +2805,54 @@
       document.addEventListener('keydown', function (ev) {
         if (ev.key === 'Escape') { $('helpOverlay').classList.add('hidden'); }
       });
+      var audioPanel = $('audioPanel'), sfxVolSlider = $('sfxVolSlider'), musicVolSlider = $('musicVolSlider'), hapticsToggle = $('hapticsToggle');
+      function sliderFill(input) { input.style.setProperty('--fill', input.value + '%'); }
       function updateSoundIcon() {
-        $('soundOnIco').classList.toggle('hidden', !save.sound);
-        $('soundOffIco').classList.toggle('hidden', save.sound);
+        var muted = save.sfxVol <= 0 && save.musicVol <= 0;
+        $('soundOnIco').classList.toggle('hidden', muted);
+        $('soundOffIco').classList.toggle('hidden', !muted);
       }
-      $('soundBtn').addEventListener('click', function () {
-        save.sound = !save.sound;
-        persist();
+      function syncAudioControls() {
+        sfxVolSlider.value = Math.round(save.sfxVol * 100);
+        musicVolSlider.value = Math.round(save.musicVol * 100);
+        sliderFill(sfxVolSlider); sliderFill(musicVolSlider);
+        hapticsToggle.classList.toggle('on', !!save.haptics);
+        hapticsToggle.setAttribute('aria-checked', save.haptics ? 'true' : 'false');
         updateSoundIcon();
-        if (save.sound) { musicWanted = true; musicSync(); playPop(0, 3); }
-        else if (musicEngine) musicEngine.stop();
+      }
+      function audioPanelIsOpen() { return !audioPanel.classList.contains('hidden'); }
+      function setAudioPanel(open) {
+        audioPanel.classList.toggle('hidden', !open);
+        $('soundBtn').setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (open) syncAudioControls();
+      }
+      function applyVolume(channel, rawValue) {
+        var v = Math.max(0, Math.min(100, parseInt(rawValue, 10) || 0)) / 100;
+        if (channel === 'sfx') save.sfxVol = v; else save.musicVol = v;
+        syncLegacySound();
+        applyAudioVolumes();
+        updateSoundIcon();
+        persist();
+        if (channel === 'music') {
+          if (v <= 0) { if (musicEngine) musicEngine.stop(); }
+          else { musicWanted = true; musicSync(); }
+        }
+      }
+      sfxVolSlider.addEventListener('input', function () { sliderFill(sfxVolSlider); applyVolume('sfx', sfxVolSlider.value); });
+      sfxVolSlider.addEventListener('change', function () { if (save.sfxVol > 0) playPop(0, 3); });
+      musicVolSlider.addEventListener('input', function () { sliderFill(musicVolSlider); applyVolume('music', musicVolSlider.value); });
+      hapticsToggle.addEventListener('click', function () {
+        save.haptics = !save.haptics;
+        persist();
+        syncAudioControls();
       });
+      $('soundBtn').addEventListener('click', function () { setAudioPanel(!audioPanelIsOpen()); });
+      document.addEventListener('pointerdown', function (ev) {
+        if (!audioPanelIsOpen()) return;
+        if (audioPanel.contains(ev.target) || $('soundBtn').contains(ev.target)) return;
+        setAudioPanel(false);
+      }, { passive: true });
+      document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') setAudioPanel(false); });
       window.addEventListener('resize', function () { if (cur.cfg && !gameScreen.classList.contains('hidden')) layout(); });
 
       /* ================= legend ================= */
@@ -2723,7 +2886,9 @@
           return { level: cur.level, taps: cur.taps, score: cur.score, par: cur.par, budget: cur.budget,
                    tapsLeft: Math.max(0, cur.budget - cur.taps), totalCells: cur.totalCells,
                    cells: countCells(), finished: finished,
-                   sound: save.sound, tutorial: JSON.parse(JSON.stringify(save.tutorial)),
+                   sound: save.sound, sfxVol: save.sfxVol, musicVol: save.musicVol, haptics: save.haptics,
+                   sfxGain: sfxBus ? sfxBus.gain.value : null, musicGain: musicBus ? musicBus.gain.value : null,
+                   tutorial: JSON.parse(JSON.stringify(save.tutorial)),
                    intro: JSON.parse(JSON.stringify(save.intro)), pendingIntro: pendingIntro,
                    introVisible: !$('introOverlay').classList.contains('hidden'),
                    introTitle: $('introTitle').textContent, introText: $('introText').textContent, prompt: promptMode };
@@ -2739,7 +2904,7 @@
           contextState: function () { return AC ? AC.state : null; },
           wanted: function () { return musicWanted; },
           bars: function () { return musicEngine ? musicEngine.bars() : 0; },
-          setFamily: function (k) { musicWanted = true; if (ensureAudio()) { var e = ensureMusic(); if (e) { e.setFamily(k); e.start(); } } },
+          setFamily: function (k) { musicWanted = true; if (save.musicVol > 0 && ensureAudio()) { var e = ensureMusic(); if (e) { e.setFamily(k); e.start(); } } },
           stop: function () { if (musicEngine) musicEngine.stop(); }
         },
         tapBubbleAt: function (c, r) {
@@ -2770,7 +2935,7 @@
       setSession();
       function armMusic() {
         setSession();
-        if (!save.sound) return;
+        if (save.musicVol <= 0) return;
         if (!ensureAudio()) return;
         musicWanted = true;
         musicSync();
@@ -2779,13 +2944,13 @@
       document.addEventListener('keydown', armMusic);
       window.addEventListener('pagehide', function () { if (cur.level) persistProgress(); else persist(); });
       document.addEventListener('visibilitychange', function () {
-        if (document.visibilityState === 'visible' && musicWanted && save.sound) musicSync();
+        if (document.visibilityState === 'visible' && musicWanted && save.musicVol > 0) musicSync();
       });
       document.addEventListener('visibilitychange', function () {
         if (document.visibilityState === 'hidden') { if (cur.level) persistProgress(); else persist(); }
       });
       loadSave();
-      updateSoundIcon();
+      syncAudioControls();
       buildHome();
       showScreen('home');
       armMusic();
