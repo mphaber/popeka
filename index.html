@@ -27,6 +27,9 @@
         --gold: #FFB400;
         --btn-bg: #2E2447;
         --btn-ink: #FFF8EE;
+        --btn-edge: #17102B;
+        --card-edge: #DEC79B;
+        --sheen: rgba(255, 255, 255, 0.55);
         --shadow: 0 10px 28px rgba(96, 54, 8, 0.13);
         --panel-shadow: 0 18px 50px rgba(46, 36, 71, 0.28);
       }
@@ -40,6 +43,9 @@
           --chip: #2B2C4E;
           --btn-bg: #F5F2FF;
           --btn-ink: #23243F;
+          --btn-edge: #9C8FD6;
+          --card-edge: #12121F;
+          --sheen: rgba(255, 255, 255, 0.10);
           --shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
           --panel-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
         }
@@ -58,36 +64,40 @@
       .hidden { display: none !important; }
 
       /* ---------- top bar ---------- */
+      /* The bar itself is invisible: each screen's full-bleed background
+         runs edge to edge at the top, and the controls float over it as
+         frosted dark pills with cream icons (help, sound, back). The
+         contextual title sits directly on the background in solid ink
+         with a soft halo so it stays readable over the bright gradient.
+         On the front door the title is hidden: the big logo is the title. */
       #topbar {
         position: sticky; top: 0; z-index: 40;
         display: flex; align-items: center; gap: 10px;
-        padding: 10px 14px;
-        background: var(--tb, rgba(255, 251, 244, 0.94));
-      }
-      #topbar::after {
-        content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px;
-        background: linear-gradient(90deg, #FF5252, #FF9F2E, #FFCF3F, #3ECF6E, #26C6DA, #4A7DFF, #9B5DE5, #F15BB5);
+        padding: calc(8px + env(safe-area-inset-top, 0px)) 14px 8px;
+        background: transparent;
       }
       #topTitle {
         flex: 1; text-align: center;
         font-family: "Baloo 2", "Nunito", sans-serif;
-        font-weight: 800; font-size: 21px; letter-spacing: 0.2px;
+        font-weight: 800; font-size: 20px; letter-spacing: 0.2px;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        background: linear-gradient(92deg, #FF5D8F, #FF9F2E 22%, #DFA400 40%, #17B978 58%, #26A6C6 74%, #4A7DFF 88%, #9B5DE5);
-        -webkit-background-clip: text; background-clip: text;
-        -webkit-text-fill-color: transparent; color: transparent;
+        color: var(--ink);
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55), 0 2px 12px rgba(255, 255, 255, 0.45);
       }
-      .top-actions { display: flex; gap: 8px; }
+      .top-actions { display: flex; gap: 8px; margin-left: auto; }
       .icon-btn {
-        width: 42px; height: 42px; border-radius: 14px;
-        border: 2px solid var(--line); background: var(--card); color: var(--ink);
-        font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 19px;
+        width: 44px; height: 44px; border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.65);
+        background: rgba(46, 36, 71, 0.42); color: #FFF8EE;
+        font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 20px;
         display: inline-flex; align-items: center; justify-content: center;
-        cursor: pointer; box-shadow: 0 3px 0 var(--line);
+        cursor: pointer;
+        box-shadow: 0 3px 0 rgba(46, 36, 71, 0.35), 0 6px 16px rgba(46, 36, 71, 0.18);
+        -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
       }
-      .icon-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--line); }
-      .icon-btn svg { width: 22px; height: 22px; fill: var(--ink); }
-      #backBtn { width: auto; padding: 0 14px 0 10px; gap: 4px; font-size: 16px; }
+      .icon-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(46, 36, 71, 0.35), 0 3px 8px rgba(46, 36, 71, 0.18); }
+      .icon-btn svg { width: 22px; height: 22px; fill: #FFF8EE; }
+      #backBtn { width: auto; padding: 0 15px 0 11px; gap: 4px; font-size: 16px; border-radius: 999px; }
       #backBtn svg { width: 18px; height: 18px; }
 
       main { flex: 1; width: 100%; max-width: 640px; margin: 0 auto; padding: 14px 14px 8px; }
@@ -339,7 +349,8 @@
           background-image: radial-gradient(rgba(255, 255, 255, 0.10) 2.2px, transparent 2.4px), linear-gradient(155deg, #5B21B6 0%, #9D2460 22%, #9A3412 42%, #166534 62%, #155E75 80%, #1E40AF 100%);
           background-size: 26px 26px, 100% 100%;
         }
-        #topbar { background: rgba(22, 23, 43, 0.94); }
+        .icon-btn { background: rgba(22, 23, 43, 0.55); }
+        #topTitle { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65), 0 2px 12px rgba(0, 0, 0, 0.4); }
         #starTotal { background: var(--chip); }
         .group-title { background: rgba(20, 20, 40, 0.68); color: var(--gc, var(--ink)); }
         #groupLine span { background: rgba(20, 20, 40, 0.68); color: var(--gc, var(--ink)); }
@@ -356,6 +367,8 @@
         .bubble, .face.burst, .float-txt, .face.tut, #arrowHint, .face.rainbow, .win-stars .on, .home-bub { animation-duration: 0.01s !important; }
         .bubble { transition-duration: 0.01s; }
         .home-logo .hl { animation: none !important; }
+        .logo-deco { animation: none !important; }
+        .home-primary, .home-secondary { transition-duration: 0.01s !important; }
       }
 
       /* ---------- front door ---------- */
@@ -371,15 +384,23 @@
         to { transform: translate(16px, -52vh); }
       }
       .home-inner { position: relative; }
-      /* Logo: live letters in Baloo 2, each wearing the game's bubble gloss.
-         Layered gradients clipped to the glyph give a specular highlight at
-         the top-left, an iridescent sheen band, a lit rim along the bottom
-         and the letter's game color; a darker copy of the glyph sits a hair
-         below as the inflated edge, and drop-shadows lift the word off the
-         page. Letters nestle on a slight wave, bob gently, and pop when
-         pressed (see popLogoLetter). */
+      /* Logo: live letters in Baloo 2 wearing the Hybrid 1 bubble gel.
+         Every glyph is a small stack of painted copies of itself. Behind
+         the face, a ::before copy carries a thick cream outline (the
+         readability frame), and its zero-blur text-shadows step downward
+         in cream, then pastel pink, then pastel teal: the soft layered
+         3D stack under each letter. The gel face rides in ::after above
+         it: specular highlight top-left, an iridescent sheen band, soft
+         top light, a darker foot, a lit rim along the bottom and the
+         letter's color, with a thin translucent white stroke for the
+         bubble skin, so the gel reads plump. Letters
+         sit almost straight on a gentle wave, bob slowly, and pop when
+         pressed (see popLogoLetter). Soap bubbles, bursting rings,
+         sparkles and confetti (.logo-deco) float around the lockup;
+         they are pointer-events: none and sized in em, so they scale
+         with the word and never block a tap. */
       .home-logo {
-        position: relative; display: inline-block; margin: 10px 0 6px; padding: 0 6px;
+        position: relative; display: inline-block; margin: 16px 0 30px; padding: 12px 18px 16px;
         font-family: "Baloo 2", "Nunito", sans-serif; font-weight: 800;
         font-size: clamp(54px, 17vw, 78px); line-height: 1.12; letter-spacing: 0;
         user-select: none; -webkit-user-select: none;
@@ -387,54 +408,104 @@
       .home-logo .hl {
         position: relative; z-index: 0; display: inline-block; margin: 0 -0.012em;
         color: transparent; -webkit-text-fill-color: transparent;
-        background-image:
-          radial-gradient(ellipse 62% 42% at 30% 15%, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.62) 46%, rgba(255,255,255,0) 76%),
-          radial-gradient(ellipse 96% 64% at 30% 8%, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 56%),
-          linear-gradient(105deg, rgba(255,255,255,0) 31%, rgba(170,240,255,0.38) 44%, rgba(255,170,235,0.38) 55%, rgba(255,244,170,0.32) 65%, rgba(255,255,255,0) 79%),
-          radial-gradient(ellipse 80% 44% at 50% 112%, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 62%),
-          linear-gradient(180deg, var(--lt) 0%, var(--base) 50%, var(--dk) 110%);
-        -webkit-background-clip: text; background-clip: text;
-        -webkit-text-stroke: 0.012em var(--dk);
-        filter: drop-shadow(0 0.05em 0.04em rgba(46,36,71,0.30)) drop-shadow(0 0.15em 0.13em rgba(46,36,71,0.15));
+        filter: drop-shadow(0 0.10em 0.10em rgba(46,36,71,0.16));
         transform: rotate(var(--r, 0deg)) translateY(var(--y, 0em));
         animation: logoBob 3.6s ease-in-out var(--d, 0s) infinite alternate;
         cursor: pointer; touch-action: manipulation;
       }
       .home-logo .hl::before {
         content: attr(data-l); position: absolute; left: 0; top: 0; z-index: -1;
-        color: var(--dk); -webkit-text-fill-color: var(--dk);
-        transform: translateY(0.055em);
+        color: #FFF6DC; -webkit-text-fill-color: #FFF6DC;
+        -webkit-text-stroke: 0.115em #FFF6DC;
+        text-shadow:
+          0 0.028em 0 #FFF6DC, 0 0.056em 0 #FFF6DC, 0 0.084em 0 #FFF6DC,
+          0 0.125em 0 #F7A8C4, 0 0.153em 0 #F7A8C4, 0 0.181em 0 #F7A8C4,
+          0 0.222em 0 #7FD8CF, 0 0.250em 0 #7FD8CF;
+        pointer-events: none;
+      }
+      /* The gel face lives in ::after, painted above the cream copy:
+         an element's own clipped background would sit underneath the
+         ::before layer, so the color has to ride on top instead. */
+      .home-logo .hl::after {
+        content: attr(data-l); position: absolute; left: 0; top: 0; z-index: 1;
+        color: transparent; -webkit-text-fill-color: transparent;
+        background-image:
+          radial-gradient(ellipse 46% 30% at 32% 14%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.45) 52%, rgba(255,255,255,0) 78%),
+          linear-gradient(105deg, rgba(255,255,255,0) 34%, rgba(170,240,255,0.34) 46%, rgba(255,170,235,0.34) 56%, rgba(255,244,170,0.28) 66%, rgba(255,255,255,0) 80%),
+          linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 38%),
+          linear-gradient(0deg, rgba(30,10,60,0.18) 0%, rgba(30,10,60,0) 30%),
+          radial-gradient(ellipse 80% 40% at 50% 112%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 60%),
+          linear-gradient(180deg, var(--lt) 0%, var(--base) 34%, var(--mid) 62%, var(--dk) 112%);
+        -webkit-background-clip: text; background-clip: text;
+        -webkit-text-stroke: 0.014em rgba(255,255,255,0.35);
+        pointer-events: none;
       }
       @keyframes logoBob {
         from { transform: rotate(var(--r, 0deg)) translateY(var(--y, 0em)); }
         to   { transform: rotate(var(--r, 0deg)) translateY(calc(var(--y, 0em) - 0.05em)); }
       }
+      /* Decorations around the lockup (Hybrid 1): bubbles, bursting
+         rings with spiky splash crowns, four-point sparkles, tiny stars
+         and confetti bits. Airy on purpose: a handful at the corners,
+         nothing over the letter faces. */
+      .logo-deco {
+        position: absolute; z-index: 2; pointer-events: none;
+        animation: decoBob 5s ease-in-out var(--dd, 0s) infinite alternate;
+      }
+      @keyframes decoBob {
+        from { transform: rotate(var(--cr, 0deg)) translateY(0); }
+        to   { transform: rotate(var(--cr, 0deg)) translateY(-0.06em); }
+      }
+      .logo-bub {
+        border-radius: 50%;
+        background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.95) 0 8%, rgba(255,255,255,0.25) 26%, rgba(160,225,255,0.13) 55%, rgba(255,170,235,0.16) 82%, rgba(255,255,255,0.30) 100%);
+        box-shadow: inset 0 0 0 0.02em rgba(255,255,255,0.50), inset -0.05em -0.07em 0.10em rgba(120,160,255,0.18), inset 0.05em 0.07em 0.09em rgba(255,255,255,0.55);
+      }
+      .logo-burst { overflow: visible; }
+      .logo-spark { overflow: visible; filter: drop-shadow(0 0 0.05em rgba(255,220,120,0.85)); }
+      .logo-star { font-family: "Baloo 2", sans-serif; font-weight: 800; color: #FFC93F; text-shadow: 0 0 0.08em rgba(255,201,63,0.65); line-height: 1; }
+      .logo-conf { border-radius: 0.035em; }
       .logo-ring {
         position: absolute; z-index: 3; border-radius: 50%; pointer-events: none;
         border: 3px solid rgba(255,255,255,0.9); box-sizing: border-box;
       }
       .logo-drop { position: absolute; z-index: 3; border-radius: 50%; pointer-events: none; }
       @media (prefers-color-scheme: dark) {
-        .home-logo .hl { filter: drop-shadow(0 0.05em 0.04em rgba(0,0,0,0.50)) drop-shadow(0 0.16em 0.14em rgba(0,0,0,0.35)); }
+        .home-logo .hl { filter: drop-shadow(0 0.10em 0.10em rgba(0,0,0,0.35)); }
       }
-      .home-tag { color: var(--ink); font-weight: 800; font-size: 16.5px; margin: 2px auto 4px; max-width: 420px; text-shadow: 0 1px 0 rgba(255,255,255,0.45); }
-      .home-actions { display: flex; flex-direction: column; gap: 12px; max-width: 350px; margin: 24px auto 0; }
+      /* Front-door buttons are physical siblings of the logo: a thick
+         stacked bottom edge in a darker shade of the button's own color,
+         a glossy top highlight, and a springy press that squashes the
+         button down and compresses the edge, then bounces back. */
+      .home-actions { display: flex; flex-direction: column; gap: 14px; max-width: 350px; margin: 6px auto 0; }
       .home-primary {
-        border: none; border-radius: 20px; padding: 16px 18px 14px; cursor: pointer; font-family: inherit;
-        background: var(--btn-bg); color: var(--btn-ink); box-shadow: 0 5px 0 rgba(46,36,71,0.35), var(--shadow);
+        border: none; border-radius: 20px; padding: 16px 18px 15px; cursor: pointer; font-family: inherit;
+        background: var(--btn-bg); color: var(--btn-ink);
+        box-shadow: 0 6px 0 var(--btn-edge), var(--shadow), inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -6px 12px rgba(0,0,0,0.12);
         display: flex; flex-direction: column; align-items: center; gap: 2px;
+        transition: transform 0.18s cubic-bezier(.34,1.8,.64,1), box-shadow 0.18s cubic-bezier(.34,1.8,.64,1);
       }
-      .home-primary:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(46,36,71,0.35), var(--shadow); }
-      .home-primary .t { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 23px; }
+      .home-primary:active {
+        transform: translateY(4px) scale(0.985);
+        box-shadow: 0 2px 0 var(--btn-edge), var(--shadow), inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -3px 8px rgba(0,0,0,0.12);
+      }
+      .home-primary .t { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 23px; display: inline-flex; align-items: center; gap: 10px; }
+      .home-primary .t svg { width: 24px; height: 24px; fill: currentColor; flex: none; }
       .home-primary .s { font-size: 14px; font-weight: 800; opacity: 0.82; }
       .home-secondary {
-        border: 2px solid var(--line); border-radius: 18px; padding: 13px 16px; cursor: pointer; font-family: inherit;
-        background: var(--card); color: var(--ink); box-shadow: 0 4px 0 var(--line);
+        border: 2px solid var(--line); border-radius: 18px; padding: 15px 16px; cursor: pointer; font-family: inherit;
+        background: linear-gradient(180deg, var(--sheen), rgba(255,255,255,0) 46%), var(--card);
+        color: var(--ink);
+        box-shadow: 0 5px 0 var(--card-edge), 0 10px 20px rgba(96,54,8,0.10), inset 0 2px 0 rgba(255,255,255,0.65);
         display: flex; flex-direction: column; align-items: center; gap: 1px;
+        transition: transform 0.18s cubic-bezier(.34,1.8,.64,1), box-shadow 0.18s cubic-bezier(.34,1.8,.64,1);
       }
-      .home-secondary:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--line); }
-      .home-secondary .t { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 19px; }
-      .home-secondary .s { font-size: 13px; font-weight: 700; color: var(--muted); }
+      .home-secondary:active {
+        transform: translateY(3px) scale(0.985);
+        box-shadow: 0 2px 0 var(--card-edge), 0 5px 12px rgba(96,54,8,0.10), inset 0 2px 0 rgba(255,255,255,0.65);
+      }
+      .home-secondary .t { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 19px; display: inline-flex; align-items: center; gap: 9px; }
+      .home-secondary .t svg { width: 22px; height: 22px; fill: currentColor; flex: none; }
       .map-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
     </style>
   </head>
@@ -458,16 +529,14 @@
       <section id="homeScreen">
         <div id="homeBubbles"></div>
         <div class="home-inner">
-          <div class="home-logo" id="homeLogo" role="img" aria-label="Popeka!"><span class="hl" data-l="P" data-ci="7" style="--lt:#FFA3CE;--base:#F15BB5;--dk:#C2255C;--r:-3deg;--y:0em;--d:0s" aria-hidden="true">P</span><span class="hl" data-l="O" data-ci="1" style="--lt:#FFC46B;--base:#FF9F2E;--dk:#D96F00;--r:2deg;--y:0.05em;--d:-0.5s" aria-hidden="true">O</span><span class="hl" data-l="P" data-ci="2" style="--lt:#FFE37E;--base:#FFCF3F;--dk:#D9A400;--r:-2deg;--y:0.06em;--d:-1.1s" aria-hidden="true">P</span><span class="hl" data-l="E" data-ci="3" style="--lt:#82EBA2;--base:#3ECF6E;--dk:#149A4C;--r:2.5deg;--y:0.01em;--d:-0.3s" aria-hidden="true">E</span><span class="hl" data-l="K" data-ci="4" style="--lt:#74E2F2;--base:#26C6DA;--dk:#1289A3;--r:-2deg;--y:0.05em;--d:-1.6s" aria-hidden="true">K</span><span class="hl" data-l="A" data-ci="5" style="--lt:#93B4FF;--base:#4A7DFF;--dk:#2B4FD0;--r:2deg;--y:0.04em;--d:-0.8s" aria-hidden="true">A</span><span class="hl" data-l="!" data-ci="6" style="--lt:#C4A1F7;--base:#9B5DE5;--dk:#6D28C4;--r:-3deg;--y:0.01em;--d:-0.2s" aria-hidden="true">!</span></div>
-          <p class="home-tag" id="homeTagline">A relaxing bubble-popping puzzle. Tap a group, watch it pop, breathe out.</p>
+          <div class="home-logo" id="homeLogo" role="img" aria-label="Popeka!"><span class="hl" data-l="P" data-ci="7" style="--lt:#FF9CCB;--base:#FB6FB5;--mid:#F43F9E;--dk:#D63D8C;--r:-2deg;--y:0em;--d:0s" aria-hidden="true">P</span><span class="hl" data-l="O" data-ci="2" style="--lt:#FFE066;--base:#FFC93F;--mid:#FFAF1F;--dk:#DE8A00;--r:1.5deg;--y:0.03em;--d:-0.5s" aria-hidden="true">O</span><span class="hl" data-l="P" data-ci="4" style="--lt:#7DEDD3;--base:#2FD4B6;--mid:#12BC9E;--dk:#0A9377;--r:-1deg;--y:0.01em;--d:-1.1s" aria-hidden="true">P</span><span class="hl" data-l="E" data-ci="5" style="--lt:#8FBEFF;--base:#3D8BFF;--mid:#2F74F0;--dk:#2456C4;--r:1deg;--y:0.04em;--d:-0.3s" aria-hidden="true">E</span><span class="hl" data-l="K" data-ci="6" style="--lt:#CD9FFF;--base:#A55EFA;--mid:#9447F2;--dk:#7430C9;--r:-1.5deg;--y:0.02em;--d:-1.6s" aria-hidden="true">K</span><span class="hl" data-l="A" data-ci="0" style="--lt:#FFAB91;--base:#FF7A59;--mid:#FF6242;--dk:#DE3E1D;--r:1.5deg;--y:0.03em;--d:-0.8s" aria-hidden="true">A</span><span class="hl" data-l="!" data-ci="3" style="--lt:#93F28A;--base:#43D95E;--mid:#2CC44A;--dk:#1CA336;--r:-2deg;--y:0.01em;--d:-0.2s" aria-hidden="true">!</span><svg class="logo-deco logo-burst" style="left:-5%;top:-22%;width:0.95em;height:0.95em;--dd:-0.6s" viewBox="0 0 100 100" fill="none" aria-hidden="true"><defs><linearGradient id="irgA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7FE7FF"/><stop offset="0.35" stop-color="#C79BFF"/><stop offset="0.65" stop-color="#FF9BDC"/><stop offset="1" stop-color="#FFE066"/></linearGradient></defs><path d="M46.3 20.2 L50.0 3.0 L53.7 20.2 Z M61.7 22.4 L71.0 13.6 L68.1 26.0 Z M74.0 31.9 L92.4 25.5 L77.6 38.3 Z M79.8 46.3 L94.0 50.0 L79.8 53.7 Z M77.6 61.7 L91.6 74.0 L74.0 68.1 Z M68.1 74.0 L71.5 87.2 L61.7 77.6 Z M53.7 79.8 L50.0 100.0 L46.3 79.8 Z M38.3 77.6 L27.5 89.0 L31.9 74.0 Z M26.0 68.1 L9.3 73.5 L22.4 61.7 Z M20.2 53.7 L8.0 50.0 L20.2 46.3 Z M22.4 38.3 L7.6 25.5 L26.0 31.9 Z M31.9 26.0 L28.0 11.9 L38.3 22.4 Z" fill="url(#irgA)" opacity="0.9"/><circle cx="50" cy="50" r="29" stroke="url(#irgA)" stroke-width="6" fill="rgba(255,255,255,0.10)"/></svg><svg class="logo-deco logo-burst" style="right:-5%;top:-18%;width:1.02em;height:1.02em;--dd:-2.1s" viewBox="0 0 100 100" fill="none" aria-hidden="true"><defs><linearGradient id="irgB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7FE7FF"/><stop offset="0.35" stop-color="#C79BFF"/><stop offset="0.65" stop-color="#FF9BDC"/><stop offset="1" stop-color="#FFE066"/></linearGradient></defs><path d="M46.3 20.2 L50.0 3.0 L53.7 20.2 Z M61.7 22.4 L71.0 13.6 L68.1 26.0 Z M74.0 31.9 L92.4 25.5 L77.6 38.3 Z M79.8 46.3 L94.0 50.0 L79.8 53.7 Z M77.6 61.7 L91.6 74.0 L74.0 68.1 Z M68.1 74.0 L71.5 87.2 L61.7 77.6 Z M53.7 79.8 L50.0 100.0 L46.3 79.8 Z M38.3 77.6 L27.5 89.0 L31.9 74.0 Z M26.0 68.1 L9.3 73.5 L22.4 61.7 Z M20.2 53.7 L8.0 50.0 L20.2 46.3 Z M22.4 38.3 L7.6 25.5 L26.0 31.9 Z M31.9 26.0 L28.0 11.9 L38.3 22.4 Z" fill="url(#irgB)" opacity="0.9"/><circle cx="50" cy="50" r="29" stroke="url(#irgB)" stroke-width="6" fill="rgba(255,255,255,0.10)"/></svg><svg class="logo-deco logo-burst" style="left:1%;bottom:-24%;width:0.78em;height:0.78em;--dd:-1.2s" viewBox="0 0 100 100" fill="none" aria-hidden="true"><defs><linearGradient id="irgC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7FE7FF"/><stop offset="0.35" stop-color="#C79BFF"/><stop offset="0.65" stop-color="#FF9BDC"/><stop offset="1" stop-color="#FFE066"/></linearGradient></defs><path d="M46.3 20.2 L50.0 3.0 L53.7 20.2 Z M61.7 22.4 L71.0 13.6 L68.1 26.0 Z M74.0 31.9 L92.4 25.5 L77.6 38.3 Z M79.8 46.3 L94.0 50.0 L79.8 53.7 Z M77.6 61.7 L91.6 74.0 L74.0 68.1 Z M68.1 74.0 L71.5 87.2 L61.7 77.6 Z M53.7 79.8 L50.0 100.0 L46.3 79.8 Z M38.3 77.6 L27.5 89.0 L31.9 74.0 Z M26.0 68.1 L9.3 73.5 L22.4 61.7 Z M20.2 53.7 L8.0 50.0 L20.2 46.3 Z M22.4 38.3 L7.6 25.5 L26.0 31.9 Z M31.9 26.0 L28.0 11.9 L38.3 22.4 Z" fill="url(#irgC)" opacity="0.9"/><circle cx="50" cy="50" r="29" stroke="url(#irgC)" stroke-width="6" fill="rgba(255,255,255,0.10)"/></svg><svg class="logo-deco logo-burst" style="right:5%;bottom:-26%;width:0.85em;height:0.85em;--dd:-3s" viewBox="0 0 100 100" fill="none" aria-hidden="true"><defs><linearGradient id="irgD" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7FE7FF"/><stop offset="0.35" stop-color="#C79BFF"/><stop offset="0.65" stop-color="#FF9BDC"/><stop offset="1" stop-color="#FFE066"/></linearGradient></defs><path d="M46.3 20.2 L50.0 3.0 L53.7 20.2 Z M61.7 22.4 L71.0 13.6 L68.1 26.0 Z M74.0 31.9 L92.4 25.5 L77.6 38.3 Z M79.8 46.3 L94.0 50.0 L79.8 53.7 Z M77.6 61.7 L91.6 74.0 L74.0 68.1 Z M68.1 74.0 L71.5 87.2 L61.7 77.6 Z M53.7 79.8 L50.0 100.0 L46.3 79.8 Z M38.3 77.6 L27.5 89.0 L31.9 74.0 Z M26.0 68.1 L9.3 73.5 L22.4 61.7 Z M20.2 53.7 L8.0 50.0 L20.2 46.3 Z M22.4 38.3 L7.6 25.5 L26.0 31.9 Z M31.9 26.0 L28.0 11.9 L38.3 22.4 Z" fill="url(#irgD)" opacity="0.9"/><circle cx="50" cy="50" r="29" stroke="url(#irgD)" stroke-width="6" fill="rgba(255,255,255,0.10)"/></svg><span class="logo-deco logo-bub" style="left:-8%;top:36%;width:0.34em;height:0.34em;--dd:-0.3s" aria-hidden="true"></span><span class="logo-deco logo-bub" style="right:-8%;top:28%;width:0.28em;height:0.28em;--dd:-1.7s" aria-hidden="true"></span><span class="logo-deco logo-bub" style="left:29%;top:-24%;width:0.22em;height:0.22em;--dd:-2.6s" aria-hidden="true"></span><span class="logo-deco logo-bub" style="right:24%;bottom:-30%;width:0.38em;height:0.38em;--dd:-0.9s" aria-hidden="true"></span><span class="logo-deco logo-bub" style="left:13%;bottom:-30%;width:0.20em;height:0.20em;--dd:-3.4s" aria-hidden="true"></span><svg class="logo-deco logo-spark" style="left:15%;top:-26%;width:0.24em;height:0.24em;--dd:-1.4s" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 2 L61 39 L98 50 L61 61 L50 98 L39 61 L2 50 L39 39 Z" fill="#FFE9A3"/></svg><svg class="logo-deco logo-spark" style="right:13%;top:-28%;width:0.19em;height:0.19em;--dd:-2.9s" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 2 L61 39 L98 50 L61 61 L50 98 L39 61 L2 50 L39 39 Z" fill="#FFE9A3"/></svg><svg class="logo-deco logo-spark" style="left:43%;bottom:-32%;width:0.16em;height:0.16em;--dd:-0.2s" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 2 L61 39 L98 50 L61 61 L50 98 L39 61 L2 50 L39 39 Z" fill="#FFE9A3"/></svg><span class="logo-deco logo-star" style="left:-3%;top:-28%;font-size:0.30em;--dd:-2.2s" aria-hidden="true">★</span><span class="logo-deco logo-star" style="right:33%;top:-24%;font-size:0.20em;--dd:-1s" aria-hidden="true">★</span><span class="logo-deco logo-conf" style="left:23%;bottom:-29%;width:0.15em;height:0.065em;background:#F15BB5;--cr:20deg" aria-hidden="true"></span><span class="logo-deco logo-conf" style="right:17%;bottom:-29%;width:0.15em;height:0.065em;background:#9B5DE5;--cr:-15deg" aria-hidden="true"></span><span class="logo-deco logo-conf" style="right:-3%;top:4%;width:0.13em;height:0.06em;background:#FF9F2E;--cr:30deg" aria-hidden="true"></span></div>
           <div class="home-actions">
             <button id="continueBtn" class="home-primary" type="button">
-              <span class="t" id="continueTitle">Start playing</span>
-              <span class="s" id="continueSub">Level 1 · First Pops · ★ 0 of 1500</span>
+              <span class="t"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.4v13.2c0 .8.9 1.3 1.6.9l10.2-6.6c.6-.4.6-1.4 0-1.8L9.6 4.5C8.9 4.1 8 4.6 8 5.4z"/></svg><span id="continueTitle">Start playing</span></span>
+              <span class="s" id="continueSub">Level 1 · ★ 0 of 1500</span>
             </button>
-            <button id="homeLevelsBtn" class="home-secondary" type="button">
-              <span class="t">Levels</span>
-              <span class="s">Browse all 500 levels and your stars</span>
+            <button id="homeLevelsBtn" class="home-secondary" type="button" aria-label="Levels: browse all 500 levels and your stars">
+              <span class="t"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg>Levels</span>
             </button>
           </div>
         </div>
@@ -1757,13 +1826,15 @@
         gameScreen.classList.toggle('hidden', which !== 'game');
         backBtn.classList.toggle('hidden', which !== 'game');
         if (which === 'home') {
-          topTitle.textContent = 'Popeka!';
+          topTitle.classList.add('hidden');
           topbarEl.style.removeProperty('--tb');
           buildHome();
         } else if (which === 'map') {
+          topTitle.classList.remove('hidden');
           topTitle.textContent = 'Choose a level';
           topbarEl.style.removeProperty('--tb');
         } else {
+          topTitle.classList.remove('hidden');
           topTitle.textContent = 'Level ' + cur.level;
           var gf = groupFor(cur.level);
           groupLineTxt.textContent = gf.g.name;
@@ -1863,8 +1934,7 @@
         buildHomeBubbles();
         var lvl = continueLevel();
         $('continueTitle').textContent = hasProgress() ? 'Continue' : 'Start playing';
-        $('continueSub').textContent = 'Level ' + lvl + ' · ' + groupFor(lvl).g.name + ' · ★ ' + starTotalCount() + ' of ' + (TOTAL_LEVELS * 3);
-        $('homeTagline').textContent = 'A relaxing bubble-popping puzzle. Tap a group, watch it pop, breathe out.';
+        $('continueSub').textContent = 'Level ' + lvl + ' · ★ ' + starTotalCount() + ' of ' + (TOTAL_LEVELS * 3);
       }
       function resetCur() {
         cur.level = 0; cur.cfg = null; cur.board = []; cur.taps = 0; cur.score = 0;
