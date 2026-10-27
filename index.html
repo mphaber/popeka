@@ -355,6 +355,7 @@
       @media (prefers-reduced-motion: reduce) {
         .bubble, .face.burst, .float-txt, .face.tut, #arrowHint, .face.rainbow, .win-stars .on, .home-bub { animation-duration: 0.01s !important; }
         .bubble { transition-duration: 0.01s; }
+        .home-logo .hl { animation: none !important; }
       }
 
       /* ---------- guest banner ---------- */
@@ -388,12 +389,51 @@
         to { transform: translate(16px, -52vh); }
       }
       .home-inner { position: relative; }
+      /* Logo: live letters in Baloo 2, each wearing the game's bubble gloss.
+         Layered gradients clipped to the glyph give a specular highlight at
+         the top-left, an iridescent sheen band, a lit rim along the bottom
+         and the letter's game color; a darker copy of the glyph sits a hair
+         below as the inflated edge, and drop-shadows lift the word off the
+         page. Letters nestle on a slight wave, bob gently, and pop when
+         pressed (see popLogoLetter). */
       .home-logo {
-        font-family: "Baloo 2", "Nunito", sans-serif; font-weight: 800; font-size: 58px; line-height: 1.05;
-        letter-spacing: 0.5px; margin: 8px 0 4px;
-        background: linear-gradient(92deg, #FF5D8F, #FF9F2E 22%, #DFA400 40%, #17B978 58%, #26A6C6 74%, #4A7DFF 88%, #9B5DE5);
-        -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
-        filter: drop-shadow(0 2px 0 rgba(255,255,255,0.65));
+        position: relative; display: inline-block; margin: 10px 0 6px; padding: 0 6px;
+        font-family: "Baloo 2", "Nunito", sans-serif; font-weight: 800;
+        font-size: clamp(46px, 14.5vw, 66px); line-height: 1.12; letter-spacing: 0;
+        user-select: none; -webkit-user-select: none;
+      }
+      .home-logo .hl {
+        position: relative; z-index: 0; display: inline-block; margin: 0 -0.012em;
+        color: transparent; -webkit-text-fill-color: transparent;
+        background-image:
+          radial-gradient(ellipse 62% 42% at 30% 15%, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.62) 46%, rgba(255,255,255,0) 76%),
+          radial-gradient(ellipse 96% 64% at 30% 8%, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 56%),
+          linear-gradient(105deg, rgba(255,255,255,0) 31%, rgba(170,240,255,0.38) 44%, rgba(255,170,235,0.38) 55%, rgba(255,244,170,0.32) 65%, rgba(255,255,255,0) 79%),
+          radial-gradient(ellipse 80% 44% at 50% 112%, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 62%),
+          linear-gradient(180deg, var(--lt) 0%, var(--base) 50%, var(--dk) 110%);
+        -webkit-background-clip: text; background-clip: text;
+        -webkit-text-stroke: 0.012em var(--dk);
+        filter: drop-shadow(0 0.05em 0.04em rgba(46,36,71,0.30)) drop-shadow(0 0.15em 0.13em rgba(46,36,71,0.15));
+        transform: rotate(var(--r, 0deg)) translateY(var(--y, 0em));
+        animation: logoBob 3.6s ease-in-out var(--d, 0s) infinite alternate;
+        cursor: pointer; touch-action: manipulation;
+      }
+      .home-logo .hl::before {
+        content: attr(data-l); position: absolute; left: 0; top: 0; z-index: -1;
+        color: var(--dk); -webkit-text-fill-color: var(--dk);
+        transform: translateY(0.055em);
+      }
+      @keyframes logoBob {
+        from { transform: rotate(var(--r, 0deg)) translateY(var(--y, 0em)); }
+        to   { transform: rotate(var(--r, 0deg)) translateY(calc(var(--y, 0em) - 0.05em)); }
+      }
+      .logo-ring {
+        position: absolute; z-index: 3; border-radius: 50%; pointer-events: none;
+        border: 3px solid rgba(255,255,255,0.9); box-sizing: border-box;
+      }
+      .logo-drop { position: absolute; z-index: 3; border-radius: 50%; pointer-events: none; }
+      @media (prefers-color-scheme: dark) {
+        .home-logo .hl { filter: drop-shadow(0 0.05em 0.04em rgba(0,0,0,0.50)) drop-shadow(0 0.16em 0.14em rgba(0,0,0,0.35)); }
       }
       .home-tag { color: var(--ink); font-weight: 800; font-size: 16.5px; margin: 2px auto 4px; max-width: 420px; text-shadow: 0 1px 0 rgba(255,255,255,0.45); }
       .home-actions { display: flex; flex-direction: column; gap: 12px; max-width: 350px; margin: 24px auto 0; }
@@ -442,7 +482,7 @@
       <section id="homeScreen">
         <div id="homeBubbles"></div>
         <div class="home-inner">
-          <div class="home-logo">Poptastic!</div>
+          <div class="home-logo" id="homeLogo" role="img" aria-label="Poptastic!"><span class="hl" data-l="P" data-ci="7" style="--lt:#FFA3CE;--base:#F15BB5;--dk:#C2255C;--r:-3deg;--y:0em;--d:0s" aria-hidden="true">P</span><span class="hl" data-l="o" data-ci="1" style="--lt:#FFC46B;--base:#FF9F2E;--dk:#D96F00;--r:2deg;--y:0.05em;--d:-0.5s" aria-hidden="true">o</span><span class="hl" data-l="p" data-ci="2" style="--lt:#FFE37E;--base:#FFCF3F;--dk:#D9A400;--r:-2deg;--y:0.06em;--d:-1.1s" aria-hidden="true">p</span><span class="hl" data-l="t" data-ci="3" style="--lt:#82EBA2;--base:#3ECF6E;--dk:#149A4C;--r:2.5deg;--y:0.01em;--d:-0.3s" aria-hidden="true">t</span><span class="hl" data-l="a" data-ci="4" style="--lt:#74E2F2;--base:#26C6DA;--dk:#1289A3;--r:-2deg;--y:0.05em;--d:-1.6s" aria-hidden="true">a</span><span class="hl" data-l="s" data-ci="5" style="--lt:#93B4FF;--base:#4A7DFF;--dk:#2B4FD0;--r:2deg;--y:0.04em;--d:-0.8s" aria-hidden="true">s</span><span class="hl" data-l="t" data-ci="6" style="--lt:#C4A1F7;--base:#9B5DE5;--dk:#6D28C4;--r:-2.5deg;--y:0em;--d:-1.3s" aria-hidden="true">t</span><span class="hl" data-l="i" data-ci="6" style="--lt:#E7C9FF;--base:#B07FE8;--dk:#7E3FD1;--r:2deg;--y:0.03em;--d:-0.6s" aria-hidden="true">i</span><span class="hl" data-l="c" data-ci="5" style="--lt:#ACBDFF;--base:#8296FF;--dk:#4A5FD0;--r:-2deg;--y:0.04em;--d:-1.9s" aria-hidden="true">c</span><span class="hl" data-l="!" data-ci="6" style="--lt:#C4A1F7;--base:#9B5DE5;--dk:#6D28C4;--r:-3deg;--y:0.01em;--d:-0.2s" aria-hidden="true">!</span></div>
           <p class="home-tag" id="homeTagline">A relaxing bubble-popping puzzle. Tap a group, watch it pop, breathe out.</p>
           <div class="home-actions">
             <button id="continueBtn" class="home-primary" type="button">
@@ -1909,6 +1949,80 @@
       $('continueBtn').addEventListener('click', function () { startLevel(continueLevel(), false); });
       $('homeLevelsBtn').addEventListener('click', function () { buildMap(); showScreen('map'); });
       $('homeGuestBtn').addEventListener('click', enterGuest);
+
+      /* Logo letters pop when pressed: a burst ring and droplets in the
+         letter's own color, the letter vanishes for a beat, then re-inflates
+         with a springy overshoot, and the game's own pop sound fires through
+         the same ambient-session audio path as the board (a press is a user
+         gesture, so starting audio here is allowed). A letter ignores
+         presses while it is mid-pop, so rapid tapping cannot stack
+         animations or break the layout, and the word always settles back
+         to fully legible. Under reduced motion a press gives only a small
+         squash: no burst, no travel. */
+      var logoRM = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+      function logoBaseTransform(el) {
+        return 'rotate(' + (el.style.getPropertyValue('--r') || '0deg') + ') translateY(' + (el.style.getPropertyValue('--y') || '0em') + ')';
+      }
+      function logoBurst(el, colorHex) {
+        var logo = $('homeLogo');
+        if (!logo) return;
+        var cx = el.offsetLeft + el.offsetWidth / 2, cy = el.offsetTop + el.offsetHeight / 2;
+        var ring = document.createElement('div');
+        ring.className = 'logo-ring';
+        var rd = Math.max(30, el.offsetWidth * 0.95);
+        ring.style.width = rd + 'px'; ring.style.height = rd + 'px';
+        ring.style.left = (cx - rd / 2) + 'px'; ring.style.top = (cy - rd / 2) + 'px';
+        ring.style.borderColor = colorHex;
+        logo.appendChild(ring);
+        ring.animate([
+          { transform: 'scale(0.45)', opacity: 0.95 },
+          { transform: 'scale(1.55)', opacity: 0 }
+        ], { duration: 380, easing: 'cubic-bezier(.2,.7,.3,1)' }).onfinish = function () { ring.remove(); };
+        for (var i = 0; i < 6; i++) {
+          var s = document.createElement('div');
+          s.className = 'logo-drop';
+          var sz = 5 + Math.random() * 5;
+          s.style.width = sz + 'px'; s.style.height = sz + 'px';
+          s.style.left = (cx - sz / 2) + 'px'; s.style.top = (cy - sz / 2) + 'px';
+          s.style.background = i % 2 ? '#FFFFFF' : colorHex;
+          logo.appendChild(s);
+          var ang = Math.random() * Math.PI * 2, dist = 26 + Math.random() * 24;
+          s.animate([
+            { transform: 'translate(0,0) scale(1)', opacity: 1 },
+            { transform: 'translate(' + Math.cos(ang) * dist + 'px,' + (Math.sin(ang) * dist - 8) + 'px) scale(0.2)', opacity: 0 }
+          ], { duration: 420 + Math.random() * 160, easing: 'cubic-bezier(.2,.7,.3,1)' }).onfinish = (function (node) { return function () { node.remove(); }; })(s);
+        }
+      }
+      function popLogoLetter(el) {
+        if (el.dataset.popping) return;
+        var ci = parseInt(el.getAttribute('data-ci') || '0', 10);
+        var base = logoBaseTransform(el);
+        el.dataset.popping = '1';
+        playPop(ci, 5);
+        if (logoRM && logoRM.matches) {
+          var sq = el.animate([
+            { transform: base },
+            { transform: base + ' scale(1.12, 0.84)', offset: 0.4 },
+            { transform: base }
+          ], { duration: 190, easing: 'ease-out' });
+          sq.onfinish = function () { delete el.dataset.popping; };
+          return;
+        }
+        logoBurst(el, PALETTE[ci].hex);
+        var anim = el.animate([
+          { transform: base + ' scale(1, 1)', opacity: 1 },
+          { transform: base + ' scale(1.16, 0.8)', opacity: 1, offset: 0.16 },
+          { transform: base + ' scale(1.5, 1.5)', opacity: 0, offset: 0.3 },
+          { transform: base + ' scale(0.15, 0.15)', opacity: 0, offset: 0.52 },
+          { transform: base + ' scale(1.14, 0.92)', opacity: 1, offset: 0.76 },
+          { transform: base + ' scale(0.97, 1.03)', opacity: 1, offset: 0.9 },
+          { transform: base + ' scale(1, 1)', opacity: 1 }
+        ], { duration: 640, easing: 'ease-out' });
+        anim.onfinish = function () { anim.cancel(); delete el.dataset.popping; };
+      }
+      document.querySelectorAll('.home-logo .hl').forEach(function (el) {
+        el.addEventListener('pointerdown', function () { popLogoLetter(el); });
+      });
       $('mapHomeBtn').addEventListener('click', goHome);
       topTitle.addEventListener('click', function () {
         if (!mapScreen.classList.contains('hidden')) goHome();
