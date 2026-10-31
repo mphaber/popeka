@@ -730,6 +730,23 @@
       }
       .home-secondary .t { font-family: "Fredoka", sans-serif; font-weight: 600; font-size: 20px; display: inline-flex; align-items: center; gap: 9px; }
       .home-secondary .t svg { width: 22px; height: 22px; fill: currentColor; flex: none; }
+      .home-share {
+        border-radius: 20px; padding: 12px 18px;
+        background:
+          radial-gradient(ellipse 84% 58% at 50% -12%, rgba(255,255,255,0.56) 0%, rgba(255,255,255,0) 58%),
+          linear-gradient(135deg, #3ECF6E 0%, #26C6DA 100%);
+        box-shadow: 0 5px 0 #0E7C4F, 0 12px 20px rgba(10, 90, 55, 0.18), inset 0 2px 0 rgba(255,255,255,0.66), inset 0 -6px 11px rgba(6, 70, 40, 0.16);
+        text-shadow: 0 1px 2px rgba(6, 70, 40, 0.28);
+      }
+      .home-share:active {
+        transform: translateY(3px) scale(0.985);
+        box-shadow: 0 2px 0 #0E7C4F, 0 6px 11px rgba(10, 90, 55, 0.16), inset 0 2px 0 rgba(255,255,255,0.66), inset 0 -3px 7px rgba(6, 70, 40, 0.16);
+      }
+      .home-share .t { font-size: 18px; }
+      .home-share .t svg { width: 20px; height: 20px; }
+      .social-row { display: flex; justify-content: center; gap: 4px; margin-top: 10px; }
+      .social-row a { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; text-decoration: none; }
+      .social-row a svg { display: block; }
       #mapHomeBtn {
         border: 3px solid var(--cream); border-radius: 999px; color: var(--cream);
         background:
@@ -791,6 +808,9 @@
             <button id="homeLevelsBtn" class="home-secondary" type="button" aria-label="Levels: browse all 500 levels and your stars">
               <span class="t"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg>Levels</span>
             </button>
+            <button id="homeShareBtn" class="home-secondary home-share" type="button" aria-label="Share Popeka!">
+              <span class="t"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg><span class="share-label">Share</span></span>
+            </button>
           </div>
         </div>
       </section>
@@ -834,7 +854,9 @@
       </section>
     </main>
 
-    <footer>Popeka! / Created by Matthew Haber / © 2026 Real Sparks. All rights reserved.</footer>
+    <footer>Popeka! / Created by Matthew Haber / © 2026 Real Sparks. All rights reserved.
+      <span class="social-row"><a href="https://realsparks.itch.io" target="_blank" rel="noopener" aria-label="Real Sparks on itch.io"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="0.5" y="0.5" width="23" height="23" rx="5" fill="#FA5C5C"/><rect x="3.6" y="8.6" width="15.9" height="6.5" rx="3.1" fill="#ffffff"/><rect x="6.3" y="10.1" width="1.5" height="3.6" fill="#FA5C5C"/><rect x="5.2" y="11.1" width="3.8" height="1.5" fill="#FA5C5C"/><circle cx="15.6" cy="10.8" r="0.95" fill="#FA5C5C"/><circle cx="17.3" cy="12.7" r="0.95" fill="#FA5C5C"/></svg></a><a href="https://www.youtube.com/@Realsparksgames" target="_blank" rel="noopener" aria-label="Real Sparks on YouTube"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="0.5" y="0.5" width="23" height="23" rx="5" fill="#FF0000"/><path d="M10.1 8.6 L16 12 L10.1 15.4 Z" fill="#ffffff"/></svg></a><a href="https://www.linkedin.com/company/realsparks/" target="_blank" rel="noopener" aria-label="Real Sparks on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="0.5" y="0.5" width="23" height="23" rx="5" fill="#0A66C2"/><text x="12" y="16.9" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="bold" fill="#ffffff" text-anchor="middle">in</text></svg></a></span>
+    </footer>
 
     <div id="helpOverlay" class="overlay hidden">
       <div class="panel">
@@ -890,6 +912,7 @@
         <div class="win-unlock" id="winUnlock"></div>
         <div class="btn-row">
           <button id="winNext" class="ctl-btn primary">Next level</button>
+          <button id="winShare" class="ctl-btn" type="button" style="--g1:#3ECF6E;--g2:#17B978;--edge:#0E7C4F"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg><span class="share-label">Share</span></button>
           <button id="winReplay" class="ctl-btn">Play again</button>
           <button id="winMap" class="ctl-btn">Map</button>
         </div>
@@ -912,6 +935,31 @@
         { name: 'Pink',   hex: '#F15BB5', sym: '♥',    note: 659.25 }
       ];
       var SCALE = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
+
+      /* ================= sharing ================= */
+      var SHARE_URL = 'https://mphaber.github.io/popeka/';
+      var winShareText = '';
+      function flashCopied(btn) {
+        var label = btn.querySelector('.share-label');
+        if (!label || label.getAttribute('data-busy')) return;
+        var orig = label.textContent;
+        label.setAttribute('data-busy', '1');
+        label.textContent = 'Copied';
+        setTimeout(function () { label.textContent = orig; label.removeAttribute('data-busy'); }, 1500);
+      }
+      function sharePopeka(btn, text) {
+        var payload = { title: 'Popeka!', text: text, url: SHARE_URL };
+        if (navigator.share) {
+          try {
+            var p = navigator.share(payload);
+            if (p && p.catch) p.catch(function () { /* sheet cancelled or failed: do nothing */ });
+          } catch (e) { /* native share unavailable: do nothing */ }
+          return;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text + ' ' + SHARE_URL).then(function () { flashCopied(btn); }, function () {});
+        }
+      }
 
       /* ================= levels ================= */
       var TOTAL_LEVELS = 500;
@@ -2545,6 +2593,7 @@
         $('winNext').classList.toggle('hidden', cur.level >= TOTAL_LEVELS);
         $('winTitle').textContent = cur.level >= TOTAL_LEVELS ? 'You popped them all!' : 'Level complete!';
         $('winUnlock').textContent = cur.level < TOTAL_LEVELS ? 'Level ' + (cur.level + 1) + ' unlocked!' : 'You finished every level!';
+        winShareText = 'I finished level ' + cur.level + ' in Popeka! with ' + stars + (stars === 1 ? ' star' : ' stars');
         setTimeout(function () { $('winOverlay').classList.remove('hidden'); }, 420);
         updateHUD();
       }
@@ -2689,6 +2738,7 @@
       }
       $('continueBtn').addEventListener('click', function () { startLevel(continueLevel(), false); });
       $('homeLevelsBtn').addEventListener('click', function () { buildMap(); showScreen('map'); });
+      $('homeShareBtn').addEventListener('click', function () { sharePopeka(this, 'Popeka! is a calm little bubble game with 500 levels'); });
 
       /* Logo letters pop when pressed: a burst ring and droplets in the
          letter's own color, the letter vanishes for a beat, then re-inflates
@@ -2830,6 +2880,7 @@
       $('outRetry').addEventListener('click', function () { $('outOverlay').classList.add('hidden'); startLevel(cur.level, true); });
       $('outMap').addEventListener('click', goMap);
       $('winReplay').addEventListener('click', function () { $('winOverlay').classList.add('hidden'); startLevel(cur.level, true); });
+      $('winShare').addEventListener('click', function () { if (winShareText) sharePopeka(this, winShareText); });
       $('winMap').addEventListener('click', goMap);
       $('helpBtn').addEventListener('click', function () { $('helpOverlay').classList.remove('hidden'); });
       $('helpClose').addEventListener('click', function () { $('helpOverlay').classList.add('hidden'); });
